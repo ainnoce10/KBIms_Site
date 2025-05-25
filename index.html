@@ -1,0 +1,3078 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KBI Multi-services - Solutions Intégrées</title>
+  <style>
+    :root {
+      --primary-color: #1E3A8A;
+      --secondary-color: #FFFF00;
+      --accent-color: #D97706;
+      --text-color: #333;
+      /*--bg-color: #79737e;*/
+      --bg-color: #1E3A8A;     
+      --light-bg: #f1f1f1;
+    }
+
+    /*---------------------------------------------*/
+    /* Styles généraux */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      overflow: auto;
+    }
+
+    /* En-tête fixe */
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      /*padding: 90px 0;*/
+      padding: 95px 0 0; /* Réduit le padding en bas */
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 999;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+       }
+
+ nav {
+    position: fixed;
+    top: 108px; /* Même valeur que .rectangle-container */
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    padding: 5px 0;
+  }
+    /* Contenu défilable */
+    .scrollable-content {
+      position: fixed;
+      /*top: 210px;*/
+      top: 165px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow-y: auto;
+      background-color: var(--light-bg);
+      padding: 10px;
+    }
+
+    /* Styles header */
+    .header-content {
+      display: flex;
+      max-width: 1200px;
+      padding: 0 20px;
+    }
+
+    header img {
+      height: 80px;
+      position: absolute;
+      top: 10%;
+      left: 2%;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+      flex-grow: 1;
+      text-align: center;
+      position: absolute;
+      top: 25%;
+      left: 25%;
+    }
+ .rectangle-container {
+    position: fixed;
+    top: 100px; /* Ajusté pour s'aligner sous le header */
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 999;
+    pointer-events: none;
+  }
+  
+   .rectangle {
+    width: 90%;
+    max-width: 900px;
+    height: 51px;
+    border: 4px solid var(--secondary-color);
+    border-radius: 55px;
+    background-color: transparent;
+    box-shadow: 0 4px 12px rgba(231, 210, 17, 0.966);
+  }  
+  
+  
+.nav-container {
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+   
+.nav-menu {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+    .nav-item {
+      position: relative;
+    }
+
+     .nav-link {
+      color: var(--primary-color);
+      background: var(--secondary-color);
+      /*padding: 9px 20px;*/
+      padding: 8px 15px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      /*font-size: 14px;*/
+      font-size: calc(12px + 0.3vw); /* Taille de police responsive */
+    }
+
+    .nav-link:hover {
+      background: var(--accent-color);
+      transform: translate(-10%, -10%) scale(1);
+      z-index: 999;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      box-shadow: 0 8px 16px rgb(252, 248, 42);
+      border-radius: 8px;
+      min-width: 220px;
+      padding: 10px 0;
+      z-index: 999;
+    }
+
+    .nav-item:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-link {
+      color: var(--primary-color);
+      padding: 12px 20px;
+      text-decoration: none;
+      display: block;
+      transition: background 0.3s ease;
+    }
+
+    .dropdown-link:hover {
+      background: var(--accent-color);
+    }
+
+    /* Carousel */
+    .carousel-inner {
+      position: relative;
+      width: 100%;
+      height: 400px;
+    }
+    
+    .carousel-item {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    
+    .carousel-item.active { 
+      opacity: 1; 
+    }
+    
+    .carousel-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    /* Sections de services */
+    .service-section {
+      padding: 60px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .service-card {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 4px 12px rgba(42, 63, 248, 0.986);
+      border-left: 4px solid var(--primary-color);
+    }
+    
+    .service-title {
+      color: var(--primary-color);
+      font-size: 28px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .service-icon { 
+      font-size: 32px; 
+      color: #F59E0B; 
+    }
+    
+    .service-details {
+      display: flex;
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .service-detail {
+      flex: 1;
+      text-align: center;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgb(26, 59, 243);
+    }
+    
+    .service-detail img {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .service-detail h3 {
+      color: var(--primary-color);
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .service-detail p { 
+      color: #555; 
+      font-size: 14px; 
+    }
+    
+    /* Boutons */
+    .service-solicitation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .solicitation-button {
+      background: var(--primary-color);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: pulse 2s infinite;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .solicitation-button:hover {
+      background: var(--accent-color);
+      transform: translateY(-2px);
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Section Réalisations */
+    .realisations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .realisation-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .realisation-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+    }
+    
+    .realisation-info {
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .realisation-info h3 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+    
+    .realisation-info p {
+      color: #555;
+      font-size: 14px;
+    }
+    
+    /* Filtres */
+    .realisations-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .filter-btn {
+      padding: 5px 10px;
+      border-radius: 25px;
+      border: 1px  var(--primary-color);
+      background: var(--secondary-color);
+      color: var(--primary-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    
+    .filter-btn:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .filter-btn.active {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    /* Formulaire de contact */
+    .contact-form {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      max-width: 800px;
+      margin: 40px auto;
+    }
+    
+    .form-group { 
+      margin-bottom: 20px; 
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    
+    .form-group textarea { 
+      resize: vertical; 
+      min-height: 150px; 
+    }
+    
+    /* Bouton de contact */
+    .button {
+      background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+      border: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+    }
+    
+    .button:hover { 
+      transform: translateY(-2px); 
+    }
+    
+    /* Infos de contact */
+    .contact-info {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .contact-info a {
+      color: var(--primary-color);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+    
+    .contact-info a i { 
+      font-size: 24px; 
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+    }
+    
+    .social-links a {
+      font-size: 36px;
+      color: var(--primary-color);
+      transition: transform 0.3s ease;
+    }
+    
+    .social-links a:hover { 
+      transform: scale(1.1); 
+    }
+    
+    .whatsapp { 
+      color: #25D366 !important; 
+    }
+    
+    .facebook { 
+      color: #1877F2; 
+    }
+    
+    /* Témoignages */
+    #testimonial-form {
+      max-width: 600px;
+      margin: 0 auto;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    #testimonial-form .rating-stars {
+      font-size: 24px;
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+    }
+    
+    #testimonial-form input[type="range"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+      animation: modalFadeIn 0.3s;
+    }
+    
+    .close-modal {
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--primary-color);
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Témoignages en attente */
+    .testimonial-card.pending {
+      opacity: 0.6;
+      border: 2px dashed var(--primary-color);
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 40px 20px;
+      font-size: 14px;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    
+    .footer-section { 
+      flex: 1 1 220px; 
+    }
+    
+    .footer-section h3 {
+      margin-bottom: 15px;
+      font-size: 18px;
+      border-bottom: 2px solid #fff;
+      display: inline-block;
+      padding-bottom: 5px;
+    }
+    
+    .footer-section ul { 
+      list-style: none; 
+      padding: 0; 
+    }
+    
+    .footer-section ul li { 
+      margin-bottom: 8px; 
+    }
+    
+    .footer-section ul li a {
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-section ul li a:hover { 
+      color: #FFD700; 
+    }
+    
+    .footer-bottom {
+      text-align: center;
+      margin-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      padding-top: 20px;
+      font-size: 13px;
+    }
+    
+    /* Footer Dropdown */
+    .footer-section.links ul li.dropdown {
+      position: relative;
+    }
+    
+    .footer-section.links ul li.dropdown .dropdown-menu {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      background: var(--primary-color);
+      color: #fff;
+      padding: 10px 0;
+      min-width: 100px;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgb(239, 243, 3);
+      z-index: 1000;
+    }
+    
+    .footer-section.links ul li.dropdown:hover .dropdown-menu {
+      display: block;
+    }
+    
+    .footer-section.links ul li.dropdown .dropdown-menu li {
+      padding: 8px 15px;
+    }
+    
+    .footer-section.links ul li.dropdown .dropdown-menu li a {
+      color: #fff;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+    
+    .footer-section.links ul li.dropdown .dropdown-menu li a:hover {
+      background: var(--accent-color);
+    }
+    
+    /* Section Avis Clients */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+    
+    .testimonial-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 6px 20px rgba(30, 58, 138, 0.08);
+      transition: transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .testimonial-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .testimonial-header {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .client-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid var(--primary-color);
+      object-fit: cover;
+    }
+    
+    .client-info h3 {
+      color: var(--primary-color);
+      margin: 0;
+      font-size: 1.1em;
+    }
+    
+    .client-info p {
+      color: #6B7280;
+      font-size: 0.9em;
+      margin: 5px 0;
+    }
+    
+    .rating-stars {
+      color: #F59E0B;
+      font-size: 1.2em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .rating-text {
+      color: #4B5563;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+    
+    .testimonial-content {
+      color: #4B5563;
+      font-style: italic;
+      line-height: 1.6;
+      margin: 0 0 15px 0;
+      position: relative;
+      padding-left: 25px;
+    }
+    
+    .testimonial-content::before {
+      content: "“";
+      font-size: 4em;
+      color: var(--primary-color);
+      position: absolute;
+      left: -20px;
+      top: -15px;
+      opacity: 0.2;
+    }
+    
+    .testimonial-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #EEE;
+    }
+    
+    .service-tag {
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+    
+    .service-tag.electricite { 
+      background: #FEF3C7; 
+      color: #92400E; 
+    }
+    
+    .service-tag.batiment { 
+      background: #DBEAFE; 
+      color: #1E40AF; 
+    }
+    
+    .service-tag.informatique { 
+      background: #D1FAE5; 
+      color: #065F46; 
+    }
+    
+    .testimonial-date {
+      color: #6B7280;
+      font-size: 0.8em;
+    }
+    
+    .cta-avis {
+      text-align: center;
+      margin-top: 40px;
+    }
+    
+    /* Animation pulsante pour les avis */
+    @keyframes testimonialGlow {
+      0% { box-shadow: 0 0 10px rgba(30, 58, 138, 0.1); }
+      50% { box-shadow: 0 0 20px rgba(30, 58, 138, 0.2); }
+      100% { box-shadow: 0 0 10px rgba(30, 58, 138, 0.1); }
+    }
+    
+    .testimonial-card:hover {
+      animation: testimonialGlow 1.5s infinite;
+    }
+    
+    /* Styles pour les boutons d'envoi */
+    .send-options {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .send-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+    
+    .email-btn {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .whatsapp-btn {
+      background: #25D366;
+      color: white;
+    }
+    
+    .send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .fake-submit-button {
+      background: #cccccc;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.7;
+    }
+    
+    /* Style pour le champ téléphone */
+    #phone {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 100%;
+      font-size: 14px;
+    }
+    
+    #phone:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.2);
+    }
+    
+    /* Style pour les champs pays et téléphone */
+    .phone-input {
+      display: flex;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    
+    #prefix {
+      width: 80px;
+      padding: 10px;
+      background: #f5f5f5;
+      text-align: center;
+      border: none;
+      border-right: 1px solid #ddd;
+      font-weight: bold;
+    }
+    
+    #phone {
+      flex: 1;
+      padding: 10px;
+      border: none;
+    }
+    
+    .hint {
+      display: block;
+      margin-top: 5px;
+      color: #666;
+      font-size: 0.8em;
+    }
+    
+    optgroup {
+      font-weight: bold;
+      font-style: normal;
+      color: var(--primary-color);
+    }
+    
+    optgroup option {
+      font-weight: normal;
+      color: #333;
+    }
+    
+    /* Animation de confirmation */
+    .confirmation-hidden {
+      display: none;
+      opacity: 0;
+    }
+    
+    .confirmation-visible {
+      display: block;
+      background: rgba(46, 125, 50, 0.9);
+      color: white;
+      padding: 25px;
+      border-radius: 10px;
+      margin: 25px auto;
+      text-align: center;
+      max-width: 500px;
+      animation: fadeIn 0.6s ease-out forwards;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .check-animation {
+      margin: 0 auto 20px;
+      width: 80px;
+      height: 80px;
+    }
+    
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 3;
+      stroke: #fff;
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      stroke-width: 3;
+      stroke: #fff;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+    }
+    
+    .confirmation-text {
+      font-size: 1.4em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    @keyframes stroke {
+      100% { stroke-dashoffset: 0; }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /*----------------------------------------------------------------*/
+    /* Nouveaux styles pour le système d'étoiles */
+    .rating-container {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      margin: 15px 0;
+    }
+
+    .rating-container input {
+      display: none;
+    }
+
+    .rating-container label {
+      color: #ddd;
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.2s;
+      padding: 0 5px;
+    }
+
+    .rating-container input:checked ~ label,
+    .rating-container input:hover ~ label,
+    .rating-container label:hover,
+    .rating-container label:hover ~ label {
+      color: orange;
+    }
+
+    .rating-container input:checked + label,
+    .rating-container input:checked ~ label {
+      color: #ff0000;
+    }
+
+    .rating-container input[id="star3"]:checked ~ label,
+    .rating-container input[id="star3"]:checked + label {
+      color: #ffa500;
+    }
+
+    .rating-container input[id="star4"]:checked ~ label,
+    .rating-container input[id="star5"]:checked ~ label {
+      color: #008000;
+    }
+
+    /* Améliorations pour mobile */
+    @media (max-width: 768px) {
+      .rating-container label {
+        font-size: 30px;
+      }
+      
+      .send-options {
+        flex-direction: column;
+      }
+      
+      .send-btn {
+        margin-bottom: 10px;
+        padding: 12px;
+      }
+      
+      header h1 {
+        font-size: 18px;
+        left: 25%;
+      }
+      
+      .nav-link {
+        padding: 8px 15px;
+        font-size: 12px;
+      }
+    }
+
+
+.upload-container {
+  background: rgba(30, 58, 138, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.upload-success {
+  color: #2e7d32;
+  margin-bottom: 15px;
+}
+
+#upload-status ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+#upload-status li {
+  margin-bottom: 5px;
+  word-break: break-all;
+}
+
+
+ /* Ajoutez seulement ces nouveaux styles : */
+    
+    .upload-options {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .drive-btn {
+      background: #34A853 !important;
+    }
+    
+    .local-btn {
+      background: #1E3A8A !important;
+    }
+    
+    .upload-instructions {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #D97706;
+    }
+    
+    @media (max-width: 600px) {
+      .upload-options {
+        flex-direction: column;
+      }
+    }
+
+
+
+
+
+
+.add-realisation-form {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  .add-realisation-form h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+  }
+
+
+
+
+/* Style pour le formulaire admin */
+#admin-realisation-form .form-control {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+#admin-realisation-form .form-group {
+  margin-bottom: 15px;
+}
+
+#admin-realisation-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+
+
+    /* Styles ajoutés pour les réalisations */
+    .admin-actions {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+    }
+    
+    .admin-btn {
+      padding: 5px 10px;
+      margin: 0 5px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .edit-btn {
+      background: #ffc107;
+      color: #000;
+    }
+    
+    .delete-btn {
+      background: #dc3545;
+      color: #fff;
+    }
+    
+    #admin-realisation-form {
+      display: none;
+      margin-top: 30px;
+    }
+    
+    .exit-admin-btn {
+      background-color: #dc3545 !important;
+      margin-top: 20px;
+    }
+
+
+
+
+
+    /* Styles ajoutés pour le modal des réalisations */
+    .realisation-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      z-index: 10000;
+      overflow: auto;
+      animation: fadeIn 0.3s;
+    }
+    
+    .realisation-modal-content {
+      display: flex;
+      flex-direction: column;
+      max-width: 90%;
+      max-height: 90%;
+      margin: 5% auto;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .realisation-modal-img {
+      width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      background: #f5f5f5;
+    }
+    
+    .realisation-modal-info {
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .realisation-modal-info h3 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      font-size: 1.5em;
+    }
+    
+    .realisation-modal-info p {
+      color: #555;
+      margin-bottom: 15px;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    
+    .close-modal:hover {
+      color: var(--accent-color);
+    }
+    
+    .realisation-card {
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    
+    .realisation-card:hover {
+      transform: scale(1.03);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+
+
+
+    /* Galerie multi-images */
+    .gallery-thumbnails {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+    
+    .gallery-thumbnail {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border: 2px solid transparent;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    
+    .gallery-thumbnail.active {
+      border-color: var(--primary-color);
+    }
+
+    /* Zoom sur image */
+    .modal-zoom-controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+    }
+    
+    .zoom-btn {
+      background: rgba(0,0,0,0.7);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Partage réseaux sociaux */
+    .social-share {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .share-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    
+    .share-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    .facebook-btn { background: #3b5998; }
+    .whatsapp-btn { background: #25D366; }
+    .twitter-btn { background: #1DA1F2; }
+    .linkedin-btn { background: #0077B5; }
+
+    /* Tri des réalisations */
+    .sort-options {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+    
+    .sort-btn {
+      padding: 6px 12px;
+      border-radius: 15px;
+      background: #f1f1f1;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    
+    .sort-btn.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+
+    /*----------------------------------------------------------------*/
+  </style>
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body>
+
+  <!-- Contenu défilable -->
+  <div class="scrollable-content">
+    <!-- Point d'ancrage pour le bouton Accueil -->
+    <div id="accueil-anchor" style="position: absolute; top: -210px;"></div>
+    
+    <!-- Sons pour les boutons -->
+    <audio id="hover-sound" src="D:\KBIms SiteWeb 2025\SERVEUR\hover-button-287656.mp3"></audio>
+    <audio id="click-sound" src="D:\KBIms SiteWeb 2025\SERVEUR\click-buttons-ui-menu-sounds-effects-button-7-203601.mp3"></audio>
+
+    <!-- En-tête -->
+    <header>
+      <div class="header-content">
+        <img src="assets\images\LOGO KBIms.png" alt="Logo KBIms">
+        <h1>KBI MULTI-SERVICES - Solutions Intégrées</h1>
+      </div>
+    </header>
+
+<div class="rectangle-container">
+  <div class="rectangle"></div>
+</div>
+
+<nav>
+  <div class="nav-container">
+    <ul class="nav-menu">
+
+          <li class="nav-item"><a href="#accueil-anchor" class="nav-link"><i class="fas fa-home"></i>Accueil</a></li>
+          <li class="nav-item">
+            <a href="#services" class="nav-link"><i class="fas fa-cogs"></i>Services</a>
+            <div class="dropdown-menu">
+              <a href="#electricite" class="dropdown-link"><i class="fas fa-bolt"></i> Électricité</a>
+              <a href="#batiment" class="dropdown-link"><i class="fas fa-house-user"></i> Bâtiment</a>
+              <a href="#informatique" class="dropdown-link"><i class="fas fa-laptop-code"></i> Informatique</a>
+            </div>
+          </li>
+          <li class="nav-item"><a href="#realisations" class="nav-link"><i class="fas fa-images"></i>Notre Album</a></li>
+          <li class="nav-item"><a href="#avis" class="nav-link"><i class="fas fa-comments"></i>Avis Clients</a></li>
+          <li class="nav-item"><a href="#apropos" class="nav-link"><i class="fas fa-info-circle"></i>À propos</a></li>
+          <li class="nav-item"><a href="#contact" class="nav-link"><i class="fas fa-phone"></i>Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="carousel-container">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="assets\images\la maintenance electrique.jpg" alt="Domaine Électricité">
+        </div>
+        <div class="carousel-item">
+          <img src="assets\images\3D 4.jpg" alt="Domaine Bâtiment">
+        </div>
+        <div class="carousel-item">
+          <img src="assets\images\domotique.jpg" alt="Domaine Informatique">
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <!-- Sections existantes -->
+      <section id="electricite" class="service-card">
+        <div class="service-solicitation">
+          <h2 class="service-title"><i class="fas fa-bolt service-icon"></i>Électricité</h2>
+          <div class="solicitation-button" onclick="showServiceForm('electricite')">
+            <i class="fas fa-hand-pointer"></i> Solliciter nous ici
+          </div>
+        </div>
+        <p>Solutions énergétiques complètes pour particuliers et professionnels</p>
+        <div class="service-details">
+          <div class="service-detail">
+            <img src="assets\images\WhatsApp Image 2025-02-15 at 08.18.33 (1).jpeg" alt="Installation électrique">
+            <h3>Installation &amp; Rénovation</h3>
+            <p>Installation électrique neuve aux normes NFC 15-100 et mise en sécurité des anciennes installations.</p>
+          </div>
+          <div class="service-detail">
+            <img src="assets\images\installation electrique.jpg" alt="Domotique">
+            <h3>Domotique</h3>
+            <p>Solutions domotiques intelligentes pour un contrôle total de votre maison.</p>
+          </div>
+          <div class="service-detail">
+            <img src="assets\images\installation electrique2.jpg" alt="Maintenance">
+            <h3>Maintenance</h3>
+            <p>Interventions rapides et efficaces pour tous vos besoins en électricité.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Bâtiment -->
+      <section id="batiment" class="service-card">
+        <div class="service-solicitation">
+          <h2 class="service-title"><i class="fas fa-house-user service-icon"></i>Bâtiment</h2>
+          <div class="solicitation-button" onclick="showServiceForm('batiment')">
+            <i class="fas fa-hand-pointer"></i> Solliciter nous ici
+          </div>
+        </div>
+        <p>Services complets de construction et rénovation</p>
+        <div class="service-details">
+          <div class="service-detail">
+            <img src="assets\images\FunPic_20240422_121407213.jpg" alt="Construction neuve">
+            <h3>Construction Neuve</h3>
+            <p>Réalisation de projets de construction clé en main, de la conception à la livraison.</p>
+          </div>
+          <div class="service-detail">
+            <img src="assets\images\FunPic_20240422_121057748.jpg" alt="Rénovation">
+            <h3>Rénovation</h3>
+            <p>Rénovation intassets\imagesérieure et extérieure pour moderniser et valoriser votre propriété.</p>
+          </div>
+          <div class="service-detail">
+            <img src="assets\images\FunPic_20240422_121528592.jpg" alt="Aménagement">
+            <h3>Aménagement</h3>
+            <p>Aménagement de combles, extensions et surélévations pour gagner de l'espace.</p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Section Informatique -->
+      <section id="informatique" class="service-card">
+        <div class="service-solicitation">
+          <h2 class="service-title"><i class="fas fa-laptop-code service-icon"></i>Informatique</h2>
+          <div class="solicitation-button" onclick="showServiceForm('informatique')">
+            <i class="fas fa-hand-pointer"></i> Solliciter nous ici
+          </div>
+        </div>
+        <p>Solutions digitales pour particuliers et entreprises</p>
+        <div class="service-details">
+          <div class="service-detail">
+            <img src="assets\images\image accueil 2.jpeg" alt="Réseaux">
+            <h3>Réseaux</h3>
+            <p>Installation et maintenance de réseaux informatiques sécurisés et performants.</p>
+          </div>
+          <div class="service-detail">
+            <img src="assets\images\cofret electrique.png" alt="Sécurité">
+            <h3>Sécurité</h3>
+            <p>Protection des données et systèmes contre les cybermenaces.</p>
+          </div>
+          <div class="service-detail">
+            <img src="assets\images\domotique.jpg" alt="Développement">
+            <h3>Développement</h3>
+            <p>Création de sites web et applications sur mesure pour votre entreprise.</p>
+          </div>
+        </div>
+      </section>
+
+
+
+<!-- Ajoutez ceci dans votre HTML après la section "Notre Album" -->
+  <!-- Section Admin mise à jour -->
+  <section id="admin-upload" style="display: none;">
+    <div class="service-card">
+      <h2 class="service-title"><i class="fas fa-cloud-upload-alt service-icon"></i>Administration</h2>
+      
+      <div class="upload-instructions">
+        <p><i class="fas fa-info-circle"></i> <strong>Instructions :</strong></p>
+        <ol>
+          <li>Cliquez sur "Sélectionner des médias" pour choisir vos fichiers</li>
+          <li>Choisissez "Sauvegarder en local" (Chrome/Edge) ou "Google Drive" (tous navigateurs)</li>
+          <li>Suivez les instructions d'autorisation</li>
+        </ol>
+      </div>
+      
+      <div class="upload-container">
+        <input type="file" id="media-upload" multiple accept="image/*,video/*" style="display: none;">
+        <button class="solicitation-button" onclick="document.getElementById('media-upload').click()">
+          <i class="fas fa-plus"></i> Sélectionner des médias
+        </button>
+        
+        <div id="file-list" style="margin: 15px 0;"></div>
+        
+        <div class="upload-options">
+          <button class="solicitation-button local-btn" onclick="handleLocalSave()">
+            <i class="fas fa-save"></i> Sauvegarder en local
+          </button>
+          <button class="solicitation-button drive-btn" onclick="initGoogleDrive()">
+            <i class="fab fa-google-drive"></i> Sauvegarder sur Google Drive
+          </button>
+        </div>
+        
+        <div id="upload-status"></div>
+      </div>
+    </div>
+
+
+ <!-- Ajout du bouton Quitter le mode admin -->
+      <div style="text-align: right;">
+        <button class="solicitation-button exit-admin-btn" onclick="exitAdminMode()">
+          <i class="fas fa-sign-out-alt"></i> Quitter le mode Admin
+        </button>
+      </div>
+
+
+  </section>
+
+
+
+
+
+
+
+
+
+
+      <!-- Section À propos -->
+      <section id="apropos" class="service-card">
+        <h2 class="service-title"><i class="fas fa-info-circle service-icon"></i>À propos</h2>
+        <p>
+          KBI Multi-services est une entreprise spécialisée dans les solutions intégrées en électricité, bâtiment et informatique.
+          Avec plus de 13 ans d'expérience, nous nous engageons à fournir des services de qualité, respectueux des normes et adaptés à vos besoins.
+        </p>
+      </section>
+      
+      <!-- Section Réalisations -->
+<section id="realisations" class="service-card">
+    <div class="realisations-header">
+      <h2 class="service-title"><i class="fas fa-images service-icon"></i>Nos Réalisations</h2>
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">Tous</button>
+        <button class="filter-btn" data-filter="electricite">Électricité</button>
+        <button class="filter-btn" data-filter="batiment">Bâtiment</button>
+        <button class="filter-btn" data-filter="informatique">Informatique</button>
+      </div>
+      <div class="sort-options">
+        <button class="sort-btn active" data-sort="date-desc">Plus récent</button>
+        <button class="sort-btn" data-sort="date-asc">Plus ancien</button>
+        <button class="sort-btn" data-sort="title-asc">A-Z</button>
+      </div>
+    </div>
+        <div class="realisations-grid">
+          <div class="realisation-card" data-category="electricite">
+            <img src="assets\images\WhatsApp Image 2025-02-15 at 08.18.33.jpeg" alt="Réalisation 1">
+            <div class="realisation-info">
+              <h3>Installation électrique complète</h3>
+              <p>Date: 15/03/2023 | Lieu: Abidjan, Cocody</p>
+            </div>
+          </div>
+          <div class="realisation-card" data-category="batiment">
+            <img src="assets\images\Bat M N'cho Sr24-1.jpg" alt="Réalisation 2">
+            <div class="realisation-info">
+              <h3>Rénovation bâtiment</h3>
+              <p>Date: 22/06/2023 | Lieu: Abidjan, Plateau</p>
+            </div>
+          </div>
+          <div class="realisation-card" data-category="informatique">
+            <img src="assets\images\FunPic_20240422_121057748.jpg" alt="Réalisation 3">
+            <div class="realisation-info">
+              <h3>Réseau informatique</h3>
+              <p>Date: 10/09/2023 | Lieu: Abidjan, Yopougon</p>
+            </div>
+          </div>
+        </div>
+
+
+
+  <!-- Modal pour la vue détaillée -->
+  <!-- Modal mis à jour -->
+  <div id="realisation-modal" class="realisation-modal">
+    <span class="close-modal">&times;</span>
+    <div class="realisation-modal-content">
+      <img id="modal-realisation-img" class="realisation-modal-img" src="" alt="">
+      
+      <div class="modal-zoom-controls">
+        <button class="zoom-btn" onclick="zoomImage(0.8)">-</button>
+        <button class="zoom-btn" onclick="zoomImage(1.2)">+</button>
+        <button class="zoom-btn" onclick="resetZoom()">100%</button>
+      </div>
+      
+      <div class="gallery-thumbnails" id="gallery-thumbnails"></div>
+      
+      <div class="realisation-modal-info">
+        <h3 id="modal-realisation-title"></h3>
+        <p id="modal-realisation-date"></p>
+        <p id="modal-realisation-lieu"></p>
+        
+        <div class="social-share">
+          <div class="share-btn facebook-btn" onclick="shareOnFacebook()">
+            <i class="fab fa-facebook-f"></i>
+          </div>
+          <div class="share-btn whatsapp-btn" onclick="shareOnWhatsApp()">
+            <i class="fab fa-whatsapp"></i>
+          </div>
+          <div class="share-btn twitter-btn" onclick="shareOnTwitter()">
+            <i class="fab fa-twitter"></i>
+          </div>
+          <div class="share-btn linkedin-btn" onclick="shareOnLinkedIn()">
+            <i class="fab fa-linkedin-in"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Ajoutez ceci dans la section "Nos Réalisations" -->
+<div id="admin-realisation-form" style="display: none; margin-top: 30px;">
+  <div class="service-card">
+    <h2 class="service-title"><i class="fas fa-plus-circle"></i> Ajouter une réalisation</h2>
+    
+    <div class="form-group">
+      <label for="realisation-title">Titre:</label>
+      <input type="text" id="realisation-title" class="form-control">
+    </div>
+    
+    <div class="form-group">
+      <label for="realisation-date">Date:</label>
+      <input type="date" id="realisation-date" class="form-control">
+    </div>
+    
+    <div class="form-group">
+      <label for="realisation-lieu">Lieu:</label>
+      <input type="text" id="realisation-lieu" class="form-control">
+    </div>
+    
+    <div class="form-group">
+      <label for="realisation-category">Domaine:</label>
+      <select id="realisation-category" class="form-control">
+        <option value="electricite">Électricité</option>
+        <option value="batiment">Bâtiment</option>
+        <option value="informatique">Informatique</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="realisation-image">Image:</label>
+      <input type="file" id="realisation-image" accept="image/*" class="form-control">
+    </div>
+    
+    <div class="form-group">
+      <button class="solicitation-button" onclick="addRealisation()">
+        <i class="fas fa-save"></i> Enregistrer
+      </button>
+      <button class="solicitation-button" style="background: #dc3545;" onclick="clearRealisationForm()">
+        <i class="fas fa-times"></i> Annuler
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+    <!-- Formulaire d'ajout de réalisations (visible seulement en mode admin) -->
+    <div id="admin-realisation-form">
+      <div class="service-card">
+        <h2 class="service-title"><i class="fas fa-plus-circle"></i> Ajouter une réalisation</h2>
+        
+        <div class="form-group">
+          <label for="realisation-title">Titre:</label>
+          <input type="text" id="realisation-title" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="realisation-date">Date:</label>
+          <input type="date" id="realisation-date" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="realisation-lieu">Lieu:</label>
+          <input type="text" id="realisation-lieu" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="realisation-category">Domaine:</label>
+          <select id="realisation-category" class="form-control">
+            <option value="electricite">Électricité</option>
+            <option value="batiment">Bâtiment</option>
+            <option value="informatique">Informatique</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="realisation-image">Image:</label>
+          <input type="file" id="realisation-image" accept="image/*" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <button class="solicitation-button" onclick="addRealisation()">
+            <i class="fas fa-save"></i> Enregistrer
+          </button>
+          <button class="solicitation-button" style="background: #6c757d;" onclick="clearRealisationForm()">
+            <i class="fas fa-times"></i> Annuler
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="realisations-grid">
+      <!-- Les réalisations seront chargées dynamiquement ici -->
+    </div>
+  
+
+
+      </section>
+      
+      <!-- Section Contact -->
+      <section id="contact" class="contact-form">
+        <h2>Contactez-nous</h2>
+        <div id="kbims-form">
+          <p>Pour toute demande de devis ou d'intervention, n'hésitez pas à remplir ce formulaire ci-dessous et envoyer :</p>
+          <form id="contact-form">
+          
+          <!--form id="contact-form" method="post"-->
+            <div class="form-group">
+              <label for="name">Nom complet :</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Adresse email :</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+              <label for="country">Pays :</label>
+              <select id="country" name="country" onchange="updatePhonePrefix()" required>
+                <option value="">Sélectionnez un pays</option>
+                <!-- Afrique de l'Ouest -->
+                <optgroup label="Afrique de l'Ouest">
+                  <option value="BJ">Bénin (+229)</option>
+                  <option value="BF">Burkina Faso (+226)</option>
+                  <option value="CV">Cap-Vert (+238)</option>
+                  <option value="CI" selected>Côte d'Ivoire (+225)</option>
+                  <option value="GM">Gambie (+220)</option>
+                  <option value="GH">Ghana (+233)</option>
+                  <option value="GN">Guinée (+224)</option>
+                  <option value="GW">Guinée-Bissau (+245)</option>
+                  <option value="LR">Liberia (+231)</option>
+                  <option value="ML">Mali (+223)</option>
+                  <option value="MR">Mauritanie (+222)</option>
+                  <option value="NE">Niger (+227)</option>
+                  <option value="NG">Nigeria (+234)</option>
+                  <option value="SN">Sénégal (+221)</option>
+                  <option value="SL">Sierra Leone (+232)</option>
+                  <option value="TG">Togo (+228)</option>
+                </optgroup>
+                
+                <!-- Afrique Centrale -->
+                <optgroup label="Afrique Centrale">
+                  <option value="CM">Cameroun (+237)</option>
+                  <option value="CF">République Centrafricaine (+236)</option>
+                  <option value="TD">Tchad (+235)</option>
+                  <option value="CG">Congo-Brazzaville (+242)</option>
+                  <option value="CD">Congo-Kinshasa (+243)</option>
+                  <option value="GQ">Guinée Équatoriale (+240)</option>
+                  <option value="GA">Gabon (+241)</option>
+                  <option value="ST">Sao Tomé-et-Principe (+239)</option>
+                </optgroup>
+                
+                <!-- Afrique de l'Est -->
+                <optgroup label="Afrique de l'Est">
+                  <option value="BI">Burundi (+257)</option>
+                  <option value="KM">Comores (+269)</option>
+                  <option value="DJ">Djibouti (+253)</option>
+                  <option value="ER">Érythrée (+291)</option>
+                  <option value="ET">Éthiopie (+251)</option>
+                  <option value="KE">Kenya (+254)</option>
+                  <option value="MG">Madagascar (+261)</option>
+                  <option value="MW">Malawi (+265)</option>
+                  <option value="MU">Maurice (+230)</option>
+                  <option value="MZ">Mozambique (+258)</option>
+                  <option value="RW">Rwanda (+250)</option>
+                  <option value="SC">Seychelles (+248)</option>
+                  <option value="SO">Somalie (+252)</option>
+                  <option value="SS">Soudan du Sud (+211)</option>
+                  <option value="TZ">Tanzanie (+255)</option>
+                  <option value="UG">Ouganda (+256)</option>
+                  <option value="ZM">Zambie (+260)</option>
+                  <option value="ZW">Zimbabwe (+263)</option>
+                </optgroup>
+                
+                <!-- Afrique du Nord -->
+                <optgroup label="Afrique du Nord">
+                  <option value="DZ">Algérie (+213)</option>
+                  <option value="EG">Égypte (+20)</option>
+                  <option value="LY">Libye (+218)</option>
+                  <option value="MA">Maroc (+212)</option>
+                  <option value="SD">Soudan (+249)</option>
+                  <option value="TN">Tunisie (+216)</option>
+                </optgroup>
+                
+                <!-- Afrique Australe -->
+                <optgroup label="Afrique Australe">
+                  <option value="AO">Angola (+244)</option>
+                  <option value="BW">Botswana (+267)</option>
+                  <option value="LS">Lesotho (+266)</option>
+                  <option value="NA">Namibie (+264)</option>
+                  <option value="ZA">Afrique du Sud (+27)</option>
+                  <option value="SZ">Eswatini (+268)</option>
+                </optgroup>
+                
+                <option value="other">Autre pays</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Téléphone :</label>
+              <div class="phone-input">
+                <input type="text" id="prefix" name="prefix" readonly value="+225">
+                <input type="tel" id="phone" name="phone" placeholder="07 49 61 57 01" required>
+              </div>
+              <small class="hint">-------- NB:Les numeros WhatsApp sont recommandés mais pas obligatoires -------- Format: +225 XX XX XX XX XX</small>
+            </div>
+
+            <div class="form-group">
+              <label for="service">Service demandé :</label>
+              <select id="service" name="service">
+                <option value="electricite">Électricité</option>
+                <option value="batiment">Bâtiment</option>
+                <option value="informatique">Informatique</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Décrivez brièvement ici ceux pour quoi vous nous sollicitez :</label>
+              <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+
+            <!-- Boutons d'envoi -->
+            <div class="form-group">
+              <label>Envoyer via :</label>
+              <div class="send-options">
+                <button type="button" class="send-btn email-btn" onclick="sendForm('email')">
+                  <i class="fas fa-envelope"></i> Envoyer par Email
+                </button>
+                <button type="button" class="send-btn whatsapp-btn" onclick="sendForm('whatsapp')">
+                  <i class="fab fa-whatsapp"></i> Envoyer par WhatsApp
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div id="form-message" style="display:none; margin-top:15px;"></div>
+        
+          <!-- Message de confirmation -->
+          <div id="confirmation-message" class="confirmation-hidden"></div>
+        </div>
+
+        <div class="contact-info">
+          <a href="tel:+2250140916600"><i class="fas fa-phone"></i> +225 0140916600</a>
+          <a href="tel:+2250749615701"><i class="fas fa-phone"></i> +225 0749615701</a>
+        </div>
+        <div class="social-links">
+          <a href="https://whatsapp.com/channel/0029VacGgCWIXnlvUXeoaL0X" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
+          <a href="https://facebook.com/kbims" target="_blank" class="facebook"><i class="fab fa-facebook"></i></a>
+        </div>
+      </section>
+  
+      <!-- Section Avis Clients -->
+      <section id="avis" class="service-card">
+        <h2 class="service-title"><i class="fas fa-comments service-icon"></i>Avis Clients</h2>
+        <div class="testimonials-grid">
+          <!-- Témoignage Électricité -->
+          <div class="testimonial-card" data-service="electricite">
+            <div class="testimonial-header">
+              <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Client" class="client-avatar">
+              <div class="client-info">
+                <h3>Jean Koffi</h3>
+                <p>Directeur d'hôtel</p>
+                <div class="rating-stars">
+                  ★★★★★ <span class="rating-text">5/5</span>
+                </div>
+              </div>
+            </div>
+            <blockquote class="testimonial-content">
+              "Intervention rapide à 2h du matin pour une panne électrique. Techniciens compétents et matériel de qualité. Service exceptionnel !"
+            </blockquote>
+            <div class="testimonial-footer">
+              <span class="service-tag electricite">Électricité</span>
+              <span class="testimonial-date">12 Juillet 2024</span>
+            </div>
+          </div>
+    
+          <!-- Témoignage Bâtiment -->
+          <div class="testimonial-card" data-service="batiment">
+            <div class="testimonial-header">
+              <img src="https://randomuser.me/api/portraits/women/2.jpg" alt="Client" class="client-avatar">
+              <div class="client-info">
+                <h3>Amina Coulibaly</h3>
+                <p>Propriétaire de villa</p>
+                <div class="rating-stars">
+                  ★★★★★ <span class="rating-text">4.7/5</span>
+                </div>
+              </div>
+            </div>
+            <blockquote class="testimonial-content">
+              "Rénovation complète de notre piscine avec des finitions parfaites. Délais respectés et équipe toujours disponible."
+            </blockquote>
+            <div class="testimonial-footer">
+              <span class="service-tag batiment">Bâtiment</span>
+              <span class="testimonial-date">25 Juin 2024</span>
+            </div>
+          </div>
+    
+          <!-- Témoignage Informatique -->
+          <div class="testimonial-card" data-service="informatique">
+            <div class="testimonial-header">
+              <img src="https://randomuser.me/api/portraits/men/3.jpg" alt="Client" class="client-avatar">
+              <div class="client-info">
+                <h3>Marc Yao</h3>
+                <p>Directeur d'entreprise</p>
+                <div class="rating-stars">
+                  ★★★★★ <span class="rating-text">5/5</span>
+                </div>
+              </div>
+            </div>
+            <blockquote class="testimonial-content">
+              "Migration de notre système informatique vers le cloud réalisée sans interruption. Sécurité renforcée et formation complète."
+            </blockquote>
+            <div class="testimonial-footer">
+              <span class="service-tag informatique">Informatique</span>
+              <span class="testimonial-date">5 Mai 2024</span>
+            </div>
+          </div>
+    
+          <!-- Témoignage supplémentaire -->
+          <div class="testimonial-card" data-service="electricite">
+            <div class="testimonial-header">
+              <img src="https://randomuser.me/api/portraits/women/4.jpg" alt="Client" class="client-avatar">
+              <div class="client-info">
+                <h3>Sophie Traoré</h3>
+                <p>Gérante de restaurant</p>
+                <div class="rating-stars">
+                  ★★★★★ <span class="rating-text">5/5</span>
+                </div>
+              </div>
+            </div>
+            <blockquote class="testimonial-content">
+              "Installation de notre système d'éclairage décoratif avec programmation personnalisée. Résultat spectaculaire !"
+            </blockquote>
+            <div class="testimonial-footer">
+              <span class="service-tag electricite">Électricité</span>
+              <span class="testimonial-date">18 Avril 2024</span>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Fenetre modale -->
+  <div id="testimonial-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <form id="testimonial-form" class="contact-form">
+        <input type="text" name="website" style="display:none;">
+        
+        <div class="form-group">
+          <label for="testimonial-name">Nom :</label>
+          <input type="text" id="testimonial-name" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Note :</label>
+          <div class="rating-container">
+            <input type="radio" id="star5" name="rating" value="5">
+            <label for="star5">★</label>
+            <input type="radio" id="star4" name="rating" value="4">
+            <label for="star4">★</label>
+            <input type="radio" id="star3" name="rating" value="3">
+            <label for="star3">★</label>
+            <input type="radio" id="star2" name="rating" value="2">
+            <label for="star2">★</label>
+            <input type="radio" id="star1" name="rating" value="1">
+            <label for="star1">★</label>
+          </div>
+        </div> 
+              <div class="form-group">
+                <label>Service concerné :</label>
+                <select id="testimonial-service" name="service">
+                  <option value="electricite">Électricité</option>
+                  <option value="batiment">Bâtiment</option>
+                  <option value="informatique">Informatique</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="testimonial-message">Message :</label>
+                <textarea id="testimonial-message" rows="4" name="message" required></textarea>
+              </div>
+              
+              <button type="button" class="button" onclick="testimonialSystem.submitTestimonial()">Soumettre</button>
+            </form>
+          </div>
+        </div> 
+        <div class="cta-avis">
+          <button class="solicitation-button" 
+            onclick="showTestimonialForm()"
+            data-action="open-form"
+            data-form-type="testimonial"
+            data-required-fields="name,rating,message"
+            data-success-message="Merci pour votre témoignage !"
+            data-error-message="Veuillez remplir tous les champs."
+            aria-label="Ouvrir le formulaire de témoignage"
+            id="testimonial-cta">
+            <i class="fas fa-edit"></i> Laisser votre témoignage
+          </button>
+        </div>
+      </section>
+    </main>
+  
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section about">
+          <h3>À propos</h3>
+          <p>
+            KBI Multi-services est une entreprise spécialisée dans les solutions intégrées en électricité, bâtiment et informatique.
+            Forts de plus de 13 ans d'expérience, nous mettons notre expertise au service de vos projets.
+          </p>
+        </div>
+        <div class="footer-section links">
+          <h3>Liens Utiles</h3>
+          <ul>
+            <li><a href="#accueil">Accueil</a></li>
+            <li class="dropdown">
+              <a href="#services">Services</a>
+              <ul class="dropdown-menu">
+                <li><a href="#electricite">Électricité</a></li>
+                <li><a href="#batiment">Bâtiment</a></li>
+                <li><a href="#informatique">Informatique</a></li>
+              </ul>
+            </li>
+            <li><a href="#apropos">À propos</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section contact">
+          <h3>Contact</h3>
+          <ul>
+            <li>Téléphone: +225 0140916600</li>
+            <li>Email: kbims2024@gmail.com</li>
+            <li>Adresse: Abidjan, Côte d'Ivoire</li>
+          </ul>
+        </div>
+        <div class="footer-section social">
+          <h3>Suivez-nous</h3>
+          <ul>
+            <li><a href="https://whatsapp.com/channel/0029VacGgCWIXnlvUXeoaL0X" target="_blank">WhatsApp</a></li>
+            <li><a href="https://facebook.com/kbims" target="_blank">Facebook</a></li>
+            <li><a href="https://tiktok.com/@kbims2025" target="_blank">TikTok</a></li>
+            <li><a href="https://facebook.com/kbims" target="_blank">YouTube</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 KBI Multi-services. Tous droits réservés.</p>
+      </div>
+    </footer>
+  
+
+  <!-- Script JavaScript -->
+  <script>
+// =============================================
+    // SYSTEME D'UPLOAD HYBRIDE
+    // =============================================
+    
+    // Configuration Google Drive
+    const DEVELOPER_KEY = 'AIzaSyA_1234567890'; // Remplacez par votre clé
+    const CLIENT_ID = '1234567890-abcdefg.apps.googleusercontent.com'; // Remplacez par votre ID client
+    const SCOPE = 'https://www.googleapis.com/auth/drive.file';
+    let googleAuth;
+    let selectedFiles = [];
+    let dirHandle; // Pour le stockage local
+
+    // Initialisation Google Drive
+    function initGoogleDrive() {
+      if (!selectedFiles.length) {
+        showMessage('Veuillez d\'abord sélectionner des fichiers', 'error');
+        return;
+      }
+
+      gapi.load('client:auth2', () => {
+        gapi.client.init({
+          apiKey: DEVELOPER_KEY,
+          clientId: CLIENT_ID,
+          scope: SCOPE,
+          discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+        }).then(() => {
+          googleAuth = gapi.auth2.getAuthInstance();
+          if (!googleAuth.isSignedIn.get()) {
+            googleAuth.signIn()
+              .then(() => uploadToGoogleDrive())
+              .catch(err => {
+                showMessage('Erreur d\'authentification: ' + err.message, 'error');
+              });
+          } else {
+            uploadToGoogleDrive();
+          }
+        }).catch(err => {
+          showMessage('Erreur d\'initialisation Google: ' + err.message, 'error');
+        });
+      });
+    }
+
+    // Upload vers Google Drive
+    function uploadToGoogleDrive() {
+      const statusDiv = document.getElementById('upload-status');
+      statusDiv.innerHTML = `
+        <div class="upload-success">
+          <i class="fas fa-spinner fa-spin"></i> Envoi vers Google Drive en cours...
+        </div>
+      `;
+
+      let uploadCount = 0;
+      const totalFiles = selectedFiles.length;
+
+      selectedFiles.forEach((file) => {
+        const metadata = {
+          name: file.name,
+          mimeType: file.type,
+          parents: ['root']
+        };
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64Data = e.target.result.split(',')[1];
+          
+          gapi.client.drive.files.create({
+            resource: metadata,
+            media: {
+              mimeType: file.type,
+              body: base64Data
+            },
+            fields: 'id,name,webViewLink'
+          }).then(response => {
+            uploadCount++;
+            statusDiv.innerHTML += `
+              <p><i class="fas fa-check"></i> ${file.name} uploadé</p>
+              <small>Lien: <a href="${response.result.webViewLink}" target="_blank">${response.result.name}</a></small>
+            `;
+            
+            if (uploadCount === totalFiles) {
+              statusDiv.innerHTML += `
+                <div class="upload-success">
+                  <i class="fas fa-check-circle"></i> Tous les fichiers ont été envoyés avec succès!
+                </div>
+              `;
+              selectedFiles = [];
+              updateFileList();
+            }
+          }).catch(err => {
+            statusDiv.innerHTML += `<p><i class="fas fa-times"></i> Erreur avec ${file.name}: ${err.message}</p>`;
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Solution locale avec FileSystem API
+    async function handleLocalSave() {
+      if (!selectedFiles.length) {
+        showMessage('Veuillez d\'abord sélectionner des fichiers', 'error');
+        return;
+      }
+
+      try {
+        // Demander le dossier une fois
+        if (!dirHandle) {
+          dirHandle = await window.showDirectoryPicker();
+        }
+        
+        const statusDiv = document.getElementById('upload-status');
+       /* statusDiv.innerHTML = `
+          <div class="upload-success">
+            <i class="fas fa-spinner fa-spin"></i> Enregistrement local en cours...
+          </div>
+        `;*/
+
+        let successCount = 0;
+        const totalFiles = selectedFiles.length;
+
+        for (const file of selectedFiles) {
+          try {
+            const fileHandle = await dirHandle.getFileHandle(file.name, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(file);
+            await writable.close();
+            
+            successCount++;
+            statusDiv.innerHTML += `<p><i class="fas fa-check"></i> ${file.name} enregistré</p>`;
+            
+            if (successCount === totalFiles) {
+              statusDiv.innerHTML += `
+                <div class="upload-success">
+                  <i class="fas fa-check-circle"></i> Tous les fichiers ont été enregistrés localement!
+                </div>
+              `;
+              selectedFiles = [];
+              updateFileList();
+            }
+          } catch (err) {
+            statusDiv.innerHTML += `<p><i class="fas fa-times"></i> Erreur avec ${file.name}: ${err.message}</p>`;
+          }
+        }
+      } catch (err) {
+        let errorMessage = `Erreur: ${err.message}`;
+        
+        if (err.name === 'AbortError') {
+          errorMessage = 'Opération annulée par l\'utilisateur';
+        } else if (!window.showDirectoryPicker) {
+          errorMessage = `
+            Votre navigateur ne supporte pas l'enregistrement local.<br>
+            <button class="solicitation-button drive-btn" onclick="initGoogleDrive()" style="margin-top:10px;">
+              <i class="fab fa-google-drive"></i> Utiliser Google Drive à la place
+            </button>
+          `;
+        }
+        
+        showMessage(errorMessage, 'error');
+      }
+    }
+
+    // Gestion de la sélection de fichiers
+    document.getElementById('media-upload').addEventListener('change', function(e) {
+      selectedFiles = Array.from(e.target.files);
+      updateFileList();
+    });
+
+    function updateFileList() {
+      const fileListDiv = document.getElementById('file-list');
+      
+      if (selectedFiles.length) {
+        let html = `<p><strong>Fichiers sélectionnés (${selectedFiles.length}):</strong></p><ul style="max-height: 200px; overflow-y: auto;">`;
+        selectedFiles.forEach(file => {
+          html += `<li>${file.name} (${formatFileSize(file.size)})</li>`;
+        });
+        html += '</ul>';
+        fileListDiv.innerHTML = html;
+      } else {
+        fileListDiv.innerHTML = '<p>Aucun fichier sélectionné</p>';
+      }
+    }
+
+    // Fonctions utilitaires
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' octets';
+      else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' Ko';
+      else return (bytes / 1048576).toFixed(1) + ' Mo';
+    }
+
+    function showMessage(message, type) {
+      const statusDiv = document.getElementById('upload-status');
+      const color = type === 'error' ? '#dc3545' : '#28a745';
+      statusDiv.innerHTML = `<p style="color: ${color}">${message}</p>`;
+    }
+
+     // =============================================
+    // GESTION DU MODE ADMIN
+    // =============================================
+    
+    const ADMIN_PASSWORD = "Kbims.com2025";
+    
+    function unlockAdmin() {
+      const password = prompt("Entrez le mot de passe administrateur:");
+      if (password === ADMIN_PASSWORD) {
+        document.getElementById('admin-upload').style.display = 'block';
+        document.getElementById('admin-realisation-form').style.display = 'block';
+        
+        // Afficher les boutons d'administration
+        document.querySelectorAll('.admin-actions').forEach(el => {
+          el.style.display = 'block';
+        });
+        
+        localStorage.setItem('kbims_admin', 'true');
+        alert("Mode admin activé");
+      } else {
+        alert("Mot de passe incorrect");
+      }
+    }
+
+    function exitAdminMode() {
+      localStorage.removeItem('kbims_admin');
+      document.getElementById('admin-upload').style.display = 'none';
+      document.getElementById('admin-realisation-form').style.display = 'none';
+      
+      // Masquer les boutons d'administration
+      document.querySelectorAll('.admin-actions').forEach(el => {
+        el.style.display = 'none';
+      });
+      
+      alert('Mode admin désactivé - Les réalisations restent visibles');
+    }
+
+    // Au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+      loadRealisations();
+      
+      if (localStorage.getItem('kbims_admin') === 'true') {
+        document.getElementById('admin-upload').style.display = 'block';
+        document.getElementById('admin-realisation-form').style.display = 'block';
+        document.querySelectorAll('.admin-actions').forEach(el => {
+          el.style.display = 'block';
+        });
+      }
+    });
+
+
+
+
+    // Nouvelle fonction d'envoi vers WhatsApp/Gmail
+    function sendForm(method) {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('prefix').value + document.getElementById('phone').value;
+      const country = document.getElementById('country').value;
+      const service = document.getElementById('service').value;
+      const message = document.getElementById('message').value;
+
+      if (!name || !message) {
+        alert('Veuillez remplir tous les champs obligatoires');
+        return;
+      }
+
+      const countryName = getCountryName(country);
+      const currentDate = new Date().toLocaleString('fr-FR');
+      
+      const formattedMessage = `
+Nouveau message de ${name}
+?? Email: ${email || 'Non fourni'}
+?? Téléphone: ${phone}
+?? Pays: ${countryName}
+?? Service: ${service}
+?? Date: ${currentDate}
+
+Message:
+${message}
+      `;
+
+      if (method === 'whatsapp') {
+        // Envoi vers WhatsApp
+        const whatsappNumber = "2250749615701"; // Votre numéro sans le +
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(formattedMessage)}`;
+        window.open(whatsappUrl, '_blank');
+      } 
+      else if (method === 'email') {
+        // Envoi vers Gmail
+        const emailAddress = "kbims2024@gmail.com";
+        const subject = `Demande de service KBIms - ${service}`;
+        const mailtoUrl = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(formattedMessage)}`;
+        window.location.href = mailtoUrl;
+      }
+
+      // Réinitialisation du formulaire
+      setTimeout(() => {
+        document.getElementById('contact-form').reset();
+      }, 1000);
+    }
+
+    // Fonction pour obtenir le nom du pays
+    function getCountryName(code) {
+      const countryNames = {
+        'CI': 'Côte d\'Ivoire',
+        // [Ajoutez les autres pays si nécessaire]
+      };
+      return countryNames[code] || code;
+    }
+
+    // Variables globales
+    const phoneFormats = {
+      // Afrique de l'Ouest
+      'BJ': { prefix: '+229', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '61 23 45 67' },
+      'BF': { prefix: '+226', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '70 12 34 56' },
+      'CV': { prefix: '+238', pattern: '[0-9]{3} [0-9]{4}', example: '981 2345' },
+      'CI': { prefix: '+225', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '07 49 61 57' },
+      'GM': { prefix: '+220', pattern: '[0-9]{3} [0-9]{4}', example: '700 1234' },
+      'GH': { prefix: '+233', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '24 123 4567' },
+      'GN': { prefix: '+224', pattern: '[0-9]{3} [0-9]{3} [0-9]{3}', example: '621 123 456' },
+      'GW': { prefix: '+245', pattern: '[0-9]{3} [0-9]{4}', example: '955 1234' },
+      'LR': { prefix: '+231', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '77 123 4567' },
+      'ML': { prefix: '+223', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '76 12 34 56' },
+      'MR': { prefix: '+222', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '36 12 34 56' },
+      'NE': { prefix: '+227', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '93 12 34 56' },
+      'NG': { prefix: '+234', pattern: '[0-9]{3} [0-9]{3} [0-9]{4}', example: '812 345 6789' },
+      'SN': { prefix: '+221', pattern: '[0-9]{2} [0-9]{3} [0-9]{2} [0-9]{2}', example: '77 123 45 67' },
+      'SL': { prefix: '+232', pattern: '[0-9]{2} [0-9]{3} [0-9]{3}', example: '25 123 456' },
+      'TG': { prefix: '+228', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '90 12 34 56' },
+      
+      // Afrique Centrale
+      'CM': { prefix: '+237', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '69 99 99 99' },
+      'CF': { prefix: '+236', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '70 12 34 56' },
+      'TD': { prefix: '+235', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '63 12 34 56' },
+      'CG': { prefix: '+242', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '06 123 4567' },
+      'CD': { prefix: '+243', pattern: '[0-9]{3} [0-9]{3} [0-9]{3}', example: '812 345 678' },
+      'GQ': { prefix: '+240', pattern: '[0-9]{3} [0-9]{3} [0-9]{3}', example: '222 123 456' },
+      'GA': { prefix: '+241', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '06 12 34 56' },
+      'ST': { prefix: '+239', pattern: '[0-9]{3} [0-9]{4}', example: '981 2345' },
+      
+      // Afrique de l'Est
+      'BI': { prefix: '+257', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '79 12 34 56' },
+      'KM': { prefix: '+269', pattern: '[0-9]{3} [0-9]{4}', example: '321 2345' },
+      'DJ': { prefix: '+253', pattern: '[0-9]{2} [0-9]{2} [0-9]{2} [0-9]{2}', example: '77 12 34 56' },
+      'ER': { prefix: '+291', pattern: '[0-9]{1} [0-9]{3} [0-9]{3}', example: '7 123 456' },
+      'ET': { prefix: '+251', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '91 123 4567' },
+      'KE': { prefix: '+254', pattern: '[0-9]{3} [0-9]{3} [0-9]{3}', example: '712 345 678' },
+      'MG': { prefix: '+261', pattern: '[0-9]{2} [0-9]{2} [0-9]{3} [0-9]{2}', example: '32 12 345 67' },
+      'MW': { prefix: '+265', pattern: '[0-9]{1} [0-9]{3} [0-9]{3}', example: '1 123 456' },
+      'MU': { prefix: '+230', pattern: '[0-9]{3} [0-9]{4}', example: '591 2345' },
+      'MZ': { prefix: '+258', pattern: '[0-9]{2} [0-9]{3} [0-9]{3}', example: '82 123 456' },
+      'RW': { prefix: '+250', pattern: '[0-9]{3} [0-9]{3} [0-9]{3}', example: '72 123 456' },
+      'SC': { prefix: '+248', pattern: '[0-9]{1} [0-9]{3} [0-9]{3}', example: '2 123 456' },
+      'SO': { prefix: '+252', pattern: '[0-9]{2} [0-9]{3} [0-9]{3}', example: '61 123 456' },
+      'SS': { prefix: '+211', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '95 123 4567' },
+      'TZ': { prefix: '+255', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '62 123 4567' },
+      'UG': { prefix: '+256', pattern: '[0-9]{3} [0-9]{6}', example: '712 345678' },
+      'ZM': { prefix: '+260', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '97 123 4567' },
+      'ZW': { prefix: '+263', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '71 123 4567' },
+      
+      // Afrique du Nord
+      'DZ': { prefix: '+213', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '55 123 4567' },
+      'EG': { prefix: '+20', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '10 123 4567' },
+      'LY': { prefix: '+218', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '91 123 4567' },
+      'MA': { prefix: '+212', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '61 123 4567' },
+      'SD': { prefix: '+249', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '91 123 4567' },
+      'TN': { prefix: '+216', pattern: '[0-9]{2} [0-9]{3} [0-9]{3}', example: '20 123 456' },
+      
+      // Afrique Australe
+      'AO': { prefix: '+244', pattern: '[0-9]{3} [0-9]{3} [0-9]{3}', example: '923 123 456' },
+      'BW': { prefix: '+267', pattern: '[0-9]{2} [0-9]{3} [0-9]{3}', example: '71 123 456' },
+      'LS': { prefix: '+266', pattern: '[0-9]{2} [0-9]{3} [0-9]{3}', example: '50 123 456' },
+      'NA': { prefix: '+264', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '81 123 4567' },
+      'ZA': { prefix: '+27', pattern: '[0-9]{2} [0-9]{3} [0-9]{4}', example: '82 123 4567' },
+      'SZ': { prefix: '+268', pattern: '[0-9]{2} [0-9]{3} [0-9]{3}', example: '76 123 456' },
+      
+      'other': { prefix: '+', pattern: '[0-9]{8,15}', example: '8123456789' }
+    };
+
+    // Fonction pour obtenir le nom complet du pays
+    function getCountryName(code) {
+      const countryNames = {
+        'BJ': 'Bénin', 'BF': 'Burkina Faso', 'CV': 'Cap-Vert', 'CI': 'Côte d\'Ivoire',
+        'GM': 'Gambie', 'GH': 'Ghana', 'GN': 'Guinée', 'GW': 'Guinée-Bissau',
+        'LR': 'Liberia', 'ML': 'Mali', 'MR': 'Mauritanie', 'NE': 'Niger',
+        'NG': 'Nigeria', 'SN': 'Sénégal', 'SL': 'Sierra Leone', 'TG': 'Togo',
+        'CM': 'Cameroun', 'CF': 'République Centrafricaine', 'TD': 'Tchad',
+        'CG': 'Congo-Brazzaville', 'CD': 'Congo-Kinshasa', 'GQ': 'Guinée Équatoriale',
+        'GA': 'Gabon', 'ST': 'Sao Tomé-et-Principe', 'BI': 'Burundi', 'KM': 'Comores',
+        'DJ': 'Djibouti', 'ER': 'Érythrée', 'ET': 'Éthiopie', 'KE': 'Kenya',
+        'MG': 'Madagascar', 'MW': 'Malawi', 'MU': 'Maurice', 'MZ': 'Mozambique',
+        'RW': 'Rwanda', 'SC': 'Seychelles', 'SO': 'Somalie', 'SS': 'Soudan du Sud',
+        'TZ': 'Tanzanie', 'UG': 'Ouganda', 'ZM': 'Zambie', 'ZW': 'Zimbabwe',
+        'DZ': 'Algérie', 'EG': 'Égypte', 'LY': 'Libye', 'MA': 'Maroc',
+        'SD': 'Soudan', 'TN': 'Tunisie', 'AO': 'Angola', 'BW': 'Botswana',
+        'LS': 'Lesotho', 'NA': 'Namibie', 'ZA': 'Afrique du Sud', 'SZ': 'Eswatini'
+      };
+      return countryNames[code] || 'Autre pays';
+    }
+
+    // Mettre à jour le préfixe téléphonique selon le pays sélectionné
+    function updatePhonePrefix() {
+      const countrySelect = document.getElementById('country');
+      const prefixInput = document.getElementById('prefix');
+      const phoneInput = document.getElementById('phone');
+      const countryCode = countrySelect.value;
+      
+      if (countryCode && phoneFormats[countryCode]) {
+        prefixInput.value = phoneFormats[countryCode].prefix;
+        phoneInput.placeholder = phoneFormats[countryCode].example;
+      } else {
+        prefixInput.value = '+';
+        phoneInput.placeholder = 'Numéro de téléphone';
+      }
+    }
+
+    // Envoyer le formulaire
+    function sendForm(method) {
+      // Récupération des données
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const country = document.getElementById('country').value;
+      const service = document.getElementById('service').value;
+      const message = document.getElementById('message').value;
+
+      // Validation
+      if (!name || !message) {
+        showMessage('Nom et message sont obligatoires', 'red');
+        return;
+      }
+
+      // Format du message
+      const currentDate = new Date().toLocaleString('fr-FR');
+      const formattedMessage = `
+        KBIms - Nouvelle demande de visiteur
+
+        Nom : ${name}
+        Pays : ${getCountryName(country)}
+        Téléphone : ${phone || 'Non fourni'}
+        Email : ${email || 'Non fourni'}
+        Service : ${service}
+        Message : ${message}
+
+        Date : ${currentDate}
+        Méthode : ${method}`;
+
+      // Simulation d'envoi (local)
+      console.log("=== MESSAGE SIMULÉ ===");
+      console.log(formattedMessage);
+      console.log("======================");
+
+      // Affichage confirmation
+      showConfirmation();
+
+      // Réinitialisation du formulaire après 2 secondes
+      setTimeout(() => {
+        document.getElementById('contact-form').reset();
+      }, 2000);
+    }
+
+    // Afficher un message
+    function showMessage(text, color) {
+      const messageDiv = document.getElementById('form-message');
+      messageDiv.textContent = text;
+      messageDiv.style.color = color;
+      messageDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    // Afficher la confirmation
+    function showConfirmation() {
+      const confirmation = document.getElementById('confirmation-message');
+      
+      // Animation
+      confirmation.innerHTML = `
+        <div class="check-animation">
+          <svg class="checkmark" viewBox="0 0 52 52">
+            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        </div>
+        <p class="confirmation-text">Demande envoyée avec succès !</p>
+        <p>L'équipe KBIms vous remercie et vous répondra dans les plus brefs délais.</p>
+      `;
+      
+      confirmation.classList.remove('confirmation-hidden');
+      confirmation.classList.add('confirmation-visible');
+
+      // Disparition après 5 secondes
+      setTimeout(() => {
+        confirmation.classList.remove('confirmation-visible');
+        confirmation.classList.add('confirmation-hidden');
+      }, 5000);
+    }
+
+    // Fonction pour afficher le formulaire de service
+    function showServiceForm(serviceType) {
+      const contactSection = document.getElementById('contact');
+      const serviceSelect = document.querySelector('#service');
+      
+      // Sélectionne le service approprié
+      serviceSelect.value = serviceType;
+      
+      // Fait défiler jusqu'au formulaire
+      contactSection.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    // Fonction pour afficher le formulaire de témoignage
+    function showTestimonialForm() {
+      const modal = document.getElementById('testimonial-modal');
+      if (modal) {
+        modal.style.display = 'block';
+      }
+    }
+
+    // Sons pour les boutons
+    const hoverSound = document.getElementById('hover-sound');
+    const clickSound = document.getElementById('click-sound');
+
+    // Ajouter des écouteurs d'événements pour les boutons
+    document.querySelectorAll('.nav-link, .solicitation-button, .button').forEach(button => {
+      // Son au survol
+      button.addEventListener('mouseenter', () => {
+        hoverSound.currentTime = 0; // Réinitialiser le son pour qu'il joue à chaque survol
+        hoverSound.play();
+      });
+
+      // Son au clic
+      button.addEventListener('click', () => {
+        clickSound.currentTime = 0; // Réinitialiser le son pour qu'il joue à chaque clic
+        clickSound.play();
+      });
+    });
+
+    // Fermer la modale
+    document.querySelector('.close-modal')?.addEventListener('click', function() {
+      document.getElementById('testimonial-modal').style.display = 'none';
+    });
+
+    // Fermer la modale si on clique en dehors
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('testimonial-modal');
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+
+    // Système de témoignage
+    const testimonialSystem = {
+      submitTestimonial: function() {
+        alert('Merci pour votre témoignage ! Il sera publié après modération.');
+        document.getElementById('testimonial-modal').style.display = 'none';
+      }
+    };
+
+    // Carrousel automatique
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.carousel-item');
+    
+    function showSlide(n) {
+      slides.forEach(slide => slide.classList.remove('active'));
+      currentSlide = (n + slides.length) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }
+    
+    function nextSlide() {
+      showSlide(currentSlide + 1);
+    }
+    
+    // Change de slide toutes les 5 secondes
+    setInterval(nextSlide, 5000);
+    showSlide(0);
+
+    // Filtrage des réalisations
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const filter = this.getAttribute('data-filter');
+        
+        // Met à jour le bouton actif
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filtre les cartes
+        document.querySelectorAll('.realisation-card').forEach(card => {
+          if (filter === 'all' || card.getAttribute('data-category') === filter) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Défilement fluide pour les ancres
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const target = link.getAttribute('href');
+        if (target.startsWith('#')) {
+          e.preventDefault();
+          const targetSection = document.querySelector(target);
+          if (targetSection) {
+            targetSection.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }
+        }
+      });
+    });
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialiser le préfixe téléphonique
+      updatePhonePrefix();
+      
+      // Formater le numéro pendant la saisie
+      document.getElementById('phone').addEventListener('input', function(e) {
+        const country = document.getElementById('country').value;
+        if (!country) return;
+        
+        const format = phoneFormats[country] || phoneFormats.other;
+        const pattern = format.pattern.replace(/ /g, '').replace(/\[|\]/g, '');
+        
+        if (new RegExp(pattern).test(this.value.replace(/\s/g, ''))) {
+          // Applique le formatage espacement
+          const parts = format.pattern.split(' ');
+          let value = this.value.replace(/\s/g, '');
+          let formatted = '';
+          
+          for (let i = 0; i < parts.length; i++) {
+            const partLength = parts[i].replace(/[^\d]/g, '').length;
+            formatted += value.substr(0, partLength) + ' ';
+            value = value.substr(partLength);
+          }
+          
+          this.value = formatted.trim();
+        }
+      });
+    });
+
+// Ajoutez ceci dans votre section <script>
+document.querySelectorAll('.footer-section.links a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const target = link.getAttribute('href');
+    if (target.startsWith('#')) {
+      e.preventDefault();
+      const targetSection = document.querySelector(target);
+      if (targetSection) {
+        targetSection.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }
+    }
+  });
+});
+
+// Vérification au chargement
+document.addEventListener('DOMContentLoaded', function() {
+  if(localStorage.getItem('kbims_admin') === 'true') {
+    document.getElementById('admin-upload').style.display = 'block';
+  }
+
+  // Gestion de l'upload
+  document.getElementById('media-upload').addEventListener('change', function(e) {
+    const files = e.target.files;
+    if(files.length > 0) {
+      const statusDiv = document.getElementById('upload-status');
+      statusDiv.innerHTML = `<p><i class="fas fa-spinner fa-spin"></i> Préparation de ${files.length} fichier(s)...</p>`;
+      
+      // Simulation d'upload (à remplacer par votre logique réelle)
+       setTimeout(() => {
+        let html = '<div class="upload-success"><i class="fas fa-check-circle"></i> ';
+        html += `${files.length} fichier(s) prêt(s) pour traitement</div>`;
+        html += '<ul>';
+        
+        for(let i = 0; i < files.length; i++) {
+          html += `<li>${files[i].name} (${(files[i].size/1024/1024).toFixed(2)} MB)</li>`;
+        }
+       /*
+        html += '</ul>';
+        html += '<button class="solicitation-button" onclick="processUpload()">';
+        html += '<i class="fas fa-save"></i> Enregistrer dans l\'album</button>';
+        */
+        statusDiv.innerHTML = html;
+      }, 1500);
+    }
+  });
+});
+
+// Fonction pour traiter l'upload (à adapter)
+function processUpload() {
+  alert("Fonctionnalité à implémenter :\nCette partie sauvegarderait les fichiers sur votre serveur");
+  // Ici vous devriez ajouter le code pour envoyer les fichiers à votre serveur
+}
+
+
+
+
+
+  function addRealisation() {
+    const title = document.getElementById('realisation-title').value;
+    const dateInput = document.getElementById('realisation-date').value;
+    const lieu = document.getElementById('realisation-lieu').value;
+    const category = document.getElementById('realisation-category').value;
+    const imageFile = document.getElementById('realisation-image').files[0];
+    
+    if (!title || !dateInput || !lieu) {
+      alert('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+    
+    // Formatage de la date
+    const dateObj = new Date(dateInput);
+    const formattedDate = dateObj.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    
+    // Création de la nouvelle carte de réalisation
+    const newRealisation = document.createElement('div');
+    newRealisation.className = 'realisation-card';
+    newRealisation.setAttribute('data-category', category);
+    
+    let imageHtml = '';
+    if (imageFile) {
+      const imageUrl = URL.createObjectURL(imageFile);
+      imageHtml = `<img src="${imageUrl}" alt="${title}">`;
+    } else {
+      // Image par défaut selon la catégorie
+      const defaultImages = {
+        electricite: 'D:\\KBIms Site\\Visual Studio\\installation electrique2.jpg',
+        batiment: 'D:\\KBIms Site\\Bat M N\'cho Sr24-1.jpg',
+        informatique: 'D:\\KBIms Site\\FunPic_20240422_121057748.jpg'
+      };
+      imageHtml = `<img src="${defaultImages[category]}" alt="${title}">`;
+    }
+    
+    newRealisation.innerHTML = `
+      ${imageHtml}
+      <div class="realisation-info">
+        <h3>${title}</h3>
+        <p>Date: ${formattedDate} | Lieu: ${lieu}</p>
+      </div>
+    `;
+    
+    // Ajout à la grille
+    document.querySelector('.realisations-grid').appendChild(newRealisation);
+    
+    // Réinitialisation du formulaire
+    document.getElementById('realisation-title').value = '';
+    document.getElementById('realisation-date').value = '';
+    document.getElementById('realisation-lieu').value = '';
+    document.getElementById('realisation-image').value = '';
+    
+    // Message de confirmation
+    alert('Réalisation ajoutée avec succès!');
+  }
+
+
+
+
+
+    // =============================================
+    // GESTION DES RÉALISATIONS
+    // =============================================
+    
+    // Stockage des réalisations
+    let realisations = [];
+
+    // Charger les réalisations au démarrage
+    function loadRealisations() {
+      const saved = localStorage.getItem('kbims_realisations');
+      if (saved) {
+        realisations = JSON.parse(saved);
+        renderRealisations();
+      } else {
+        // Charger les réalisations par défaut
+        realisations = [
+          {
+            title: "Installation électrique complète",
+            date: "15/03/2023",
+            lieu: "Abidjan, Cocody",
+            category: "electricite",
+            image: "D:\\KBIms Site\\WhatsApp Image 2025-02-15 at 08.18.33.jpeg"
+          },
+          {
+            title: "Rénovation bâtiment",
+            date: "22/06/2023",
+            lieu: "Abidjan, Plateau",
+            category: "batiment",
+            image: "D:\\KBIms Site\\Bat M N'cho Sr24-1.jpg"
+          },
+          {
+            title: "Réseau informatique",
+            date: "10/09/2023",
+            lieu: "Abidjan, Yopougon",
+            category: "informatique",
+            image: "D:\\KBIms Site\\FunPic_20240422_121057748.jpg"
+          }
+        ];
+        saveRealisations();
+      }
+    }
+
+    // Sauvegarder les réalisations
+    function saveRealisations() {
+      localStorage.setItem('kbims_realisations', JSON.stringify(realisations));
+    }
+
+
+
+
+
+    // =============================================
+    // GESTION DE LA VUE DÉTAILLÉE
+    // =============================================
+    
+    // Fonction pour ouvrir le modal
+    function openRealisationModal(index) {
+      const realisation = realisations[index];
+      document.getElementById('modal-realisation-img').src = realisation.image;
+      document.getElementById('modal-realisation-title').textContent = realisation.title;
+      document.getElementById('modal-realisation-date').textContent = `Date: ${realisation.date}`;
+      document.getElementById('modal-realisation-lieu').textContent = `Lieu: ${realisation.lieu}`;
+      document.getElementById('realisation-modal').style.display = 'block';
+      document.body.style.overflow = 'hidden'; // Empêche le défilement de la page
+    }
+
+    // Fonction pour fermer le modal
+    function closeRealisationModal() {
+      document.getElementById('realisation-modal').style.display = 'none';
+      document.body.style.overflow = 'auto'; // Rétablit le défilement
+    }
+
+    // Fermer le modal en cliquant sur la croix
+    document.querySelector('.close-modal').addEventListener('click', closeRealisationModal);
+
+    // Fermer le modal en cliquant en dehors du contenu
+    document.getElementById('realisation-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeRealisationModal();
+      }
+    });
+
+    // Fermer avec la touche ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('realisation-modal').style.display === 'block') {
+        closeRealisationModal();
+      }
+    });
+
+
+
+
+
+
+
+    // Afficher toutes les réalisations
+  // Modifier la fonction renderRealisations pour rendre les cartes cliquables
+    function renderRealisations() {
+      const grid = document.querySelector('.realisations-grid');
+      grid.innerHTML = '';
+
+      realisations.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'realisation-card';
+        card.setAttribute('data-category', item.category);
+        card.setAttribute('data-id', index);
+        card.onclick = function(e) {
+          // Ne pas ouvrir le modal si on clique sur les boutons admin
+          if (!e.target.closest('.admin-actions')) {
+            openRealisationModal(index);
+          }
+        };
+        
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}">
+          <div class="realisation-info">
+            <h3>${item.title}</h3>
+            <p>Date: ${item.date} | Lieu: ${item.lieu}</p>
+            <div class="admin-actions">
+              <button class="admin-btn edit-btn" onclick="editRealisation(${index})">
+                <i class="fas fa-edit"></i> Modifier
+              </button>
+              <button class="admin-btn delete-btn" onclick="deleteRealisation(${index})">
+                <i class="fas fa-trash"></i> Supprimer
+              </button>
+            </div>
+          </div>
+        `;
+        
+        grid.appendChild(card);
+      });
+    }
+
+    // Ajouter une nouvelle réalisation
+    function addRealisation() {
+      const title = document.getElementById('realisation-title').value.trim();
+      const dateInput = document.getElementById('realisation-date').value;
+      const lieu = document.getElementById('realisation-lieu').value.trim();
+      const category = document.getElementById('realisation-category').value;
+      const imageFile = document.getElementById('realisation-image').files[0];
+
+      if (!title || !dateInput || !lieu) {
+        alert('Veuillez remplir tous les champs obligatoires');
+        return;
+      }
+
+      const dateObj = new Date(dateInput);
+      const formattedDate = dateObj.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      const newRealisation = {
+        title,
+        date: formattedDate,
+        lieu,
+        category,
+        image: getDefaultImage(category) // Image par défaut si aucun fichier n'est sélectionné
+      };
+
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          newRealisation.image = e.target.result;
+          realisations.push(newRealisation);
+          saveRealisations();
+          renderRealisations();
+          clearRealisationForm();
+          alert('Réalisation ajoutée avec succès!');
+        };
+        reader.readAsDataURL(imageFile);
+      } else {
+        realisations.push(newRealisation);
+        saveRealisations();
+        renderRealisations();
+        clearRealisationForm();
+        alert('Réalisation ajoutée avec succès!');
+      }
+    }
+
+    // Fonctions utilitaires
+    function getDefaultImage(category) {
+      const defaultImages = {
+        electricite: 'D:\\KBIms Site\\Visual Studio\\installation electrique2.jpg',
+        batiment: 'D:\\KBIms Site\\Bat M N\'cho Sr24-1.jpg',
+        informatique: 'D:\\KBIms Site\\FunPic_20240422_121057748.jpg'
+      };
+      return defaultImages[category];
+    }
+
+    function clearRealisationForm() {
+      document.getElementById('realisation-title').value = '';
+      document.getElementById('realisation-date').value = '';
+      document.getElementById('realisation-lieu').value = '';
+      document.getElementById('realisation-image').value = '';
+    }
+
+    function deleteRealisation(index) {
+      if (confirm('Êtes-vous sûr de vouloir supprimer cette réalisation ?')) {
+        realisations.splice(index, 1);
+        saveRealisations();
+        renderRealisations();
+      }
+    }
+
+    function editRealisation(index) {
+      const item = realisations[index];
+      document.getElementById('realisation-title').value = item.title;
+      
+      // Convertir la date au format YYYY-MM-DD pour l'input date
+      const [day, month, year] = item.date.split('/');
+      document.getElementById('realisation-date').value = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      
+      document.getElementById('realisation-lieu').value = item.lieu;
+      document.getElementById('realisation-category').value = item.category;
+      
+      // Supprimer l'ancienne réalisation
+      realisations.splice(index, 1);
+      
+      // Scroll vers le formulaire
+      document.getElementById('admin-realisation-form').scrollIntoView();
+    }
+
+  </script>
+</body>
+</html>
