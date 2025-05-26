@@ -278,22 +278,31 @@
       margin-bottom: 30px;
     }
     
-    .solicitation-button {
-      background: var(--primary-color);
-      color: white;
-      padding: 12px 25px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      animation: pulse 2s infinite;
-      cursor: pointer;
-      border: none;
-    }
-    
+
+
+
+  .solicitation-button {
+    background: var(--primary-color);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: pulse 2s infinite;
+    cursor: pointer;
+    border: none;
+    position: relative; /* Ajout pour le positionnement */
+    z-index: 1; /* S'assure qu'il reste au-dessus du contenu */
+    margin: 15px 0; /* Espacement vertical */
+  }
+
+
+
+
     .solicitation-button:hover {
       background: var(--accent-color);
       transform: translateY(-2px);
@@ -1474,6 +1483,97 @@
   }
 
 
+
+
+
+    /* NOUVEAUX STLES OPTIMISÉS ANDROID */
+  .realisations-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 0 5px;
+  }
+
+  .filters-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .filter-group-label {
+    font-size: 14px;
+    color: var(--primary-color);
+    margin-right: 8px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .filter-btn, .sort-btn {
+    padding: 10px 15px;
+    border-radius: 20px;
+    background: var(--light-bg);
+    border: 1px solid #ddd;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    margin: 0;
+    min-width: 70px;
+    text-align: center;
+    flex-grow: 1;
+    white-space: nowrap;
+  }
+
+  .filter-btn.active, .sort-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+
+  /* RESPONSIVE MOBILE */
+  @media (max-width: 768px) {
+    .realisations-header {
+      gap: 8px;
+    }
+    
+    .filter-btn, .sort-btn {
+      padding: 12px 10px;
+      font-size: 12px;
+      min-height: 44px; /* Taille tactile minimum Android */
+    }
+    
+    .filter-group {
+      gap: 5px;
+    }
+    
+    .service-title {
+      font-size: 1.5rem;
+      margin-bottom: 5px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .filter-btn, .sort-btn {
+      flex-basis: calc(33% - 4px);
+      padding: 10px 5px;
+      font-size: 11px;
+    }
+    
+    .filter-group-label {
+      font-size: 13px;
+      margin-bottom: 3px;
+      width: 100%;
+    }
+  }
+
     /*----------------------------------------------------------------*/
   </style>
   
@@ -1692,21 +1792,25 @@
       
       <!-- Section Réalisations -->
 <section id="realisations" class="service-card">
-    <div class="realisations-header">
-      <h2 class="service-title"><i class="fas fa-images service-icon"></i>Nos Réalisations</h2>
-      <div class="filters">
-        <button class="filter-btn active" data-filter="all">Tous</button>
-        <button class="filter-btn" data-filter="electricite">Électricité</button>
-        <button class="filter-btn" data-filter="batiment">Bâtiment</button>
-        <button class="filter-btn" data-filter="informatique">Informatique</button>
-      </div>
-      <div class="sort-options">
-        <button class="sort-btn active" data-sort="date-desc">Plus récent</button>
-        <button class="sort-btn" data-sort="date-asc">Plus ancien</button>
-        <button class="sort-btn" data-sort="title-asc">A-Z</button>
-      </div>
+<section id="realisations" class="service-card">
+  <div class="realisations-header">
+    <h2 class="service-title"><i class="fas fa-images service-icon"></i>Nos Réalisations</h2>
+    
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">Tous</button>
+      <button class="filter-btn" data-filter="electricite">Électricité</button>
+      <button class="filter-btn" data-filter="batiment">Bâtiment</button>
+      <button class="filter-btn" data-filter="informatique">Informatique</button>
     </div>
-        <div class="realisations-grid">
+    
+    <div class="sort-options">
+      <button class="sort-btn active" data-sort="date-desc">Plus récent</button>
+      <button class="sort-btn" data-sort="date-asc">Plus ancien</button>
+      <button class="sort-btn" data-sort="title-asc">A-Z</button>
+    </div>
+  </div>
+
+  <div class="realisations-grid">
           <div class="realisation-card" data-category="electricite">
             <img src="assets\images\WhatsApp Image 2025-02-15 at 08.18.33.jpeg" alt="Réalisation 1">
             <div class="realisation-info">
@@ -3273,7 +3377,99 @@ function processUpload() {
     });
   });
 
+// SCRIPT OPTIMISÉ POUR MOBILE
+  document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des boutons de filtre
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Animation tactile
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
+        
+        const filter = this.dataset.filter;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filtrage des réalisations
+        document.querySelectorAll('.realisation-card').forEach(card => {
+          card.style.display = (filter === 'all' || card.dataset.category === filter) ? 
+            'block' : 'none';
+        });
+      });
+    });
+    
+    // Gestion des boutons de tri
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => { this.style.transform = 'scale(1)'; }, 100);
+        
+        const sortMethod = this.dataset.sort;
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Ici vous devrez implémenter la logique de tri réelle
+        console.log('Trier par:', sortMethod);
+      });
+    });
+  });
 
+
+
+// Fonction de tri des réalisations
+function sortRealisations(sortType) {
+  const grid = document.querySelector('.realisations-grid');
+  const cards = Array.from(document.querySelectorAll('.realisation-card'));
+  
+  // Enlever la classe active de tous les boutons
+  document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Ajouter la classe active au bouton cliqué
+  event.target.classList.add('active');
+  
+  cards.sort((a, b) => {
+    const dateA = a.getAttribute('data-date');
+    const dateB = b.getAttribute('data-date');
+    const titleA = a.querySelector('h3').textContent.toLowerCase();
+    const titleB = b.querySelector('h3').textContent.toLowerCase();
+    
+    switch(sortType) {
+      case 'date-desc':
+        return new Date(dateB) - new Date(dateA);
+      case 'date-asc':
+        return new Date(dateA) - new Date(dateB);
+      case 'title-asc':
+        return titleA.localeCompare(titleB);
+      default:
+        return 0;
+    }
+  });
+  
+  // Vider et réinsérer les cartes triées
+  grid.innerHTML = '';
+  cards.forEach(card => grid.appendChild(card));
+}
+
+// Initialisation des écouteurs d'événements
+document.addEventListener('DOMContentLoaded', function() {
+  // Écouteurs pour les boutons de tri
+  document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const sortType = this.getAttribute('data-sort');
+      sortRealisations(sortType);
+    });
+  });
+  
+  // S'assurer que les cartes ont les attributs data-date
+  document.querySelectorAll('.realisation-card').forEach(card => {
+    const dateText = card.querySelector('p').textContent.match(/Date: (.*?) \|/)[1];
+    const [day, month, year] = dateText.split('/');
+    const isoDate = `${year}-${month}-${day}`;
+    card.setAttribute('data-date', isoDate);
+  });
+});
 
 
   </script>
