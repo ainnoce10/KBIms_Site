@@ -566,7 +566,7 @@
     }
     
     /* Témoignages en attente */
-    ...pending {
+    .testimonial-card.pending {
       opacity: 0.6;
       border: 2px dashed var(--primary-color);
     }
@@ -672,7 +672,7 @@
       margin-top: 30px;
     }
     
-    .. {
+    .testimonial-card {
       background: white;
       border-radius: 15px;
       padding: 25px;
@@ -682,7 +682,7 @@
       overflow: hidden;
     }
     
-    ..:hover {
+    .testimonial-card:hover {
       transform: translateY(-5px);
     }
     
@@ -794,7 +794,7 @@
       100% { box-shadow: 0 0 10px rgba(30, 58, 138, 0.1); }
     }
     
-    ..:hover {
+    .testimonial-card:hover {
       animation: testimonialGlow 1.5s infinite;
     }
     
@@ -1635,7 +1635,7 @@
     }
 
     /* Styles Firebase - Avis Clients */
-.. .admin-actions {
+    .testimonial-card .admin-actions {
     margin-top: 10px;
     text-align: right;
 }
@@ -1677,9 +1677,8 @@
     <audio id="hover-sound" src="assets\images\hover-button-287656.mp3"></audio>
     <audio id="click-sound" src="assets\images\click-buttons-ui-menu-sounds-effects-button-7-203601.mp3"></audio>
     
-    <!-- Bouton menu mobile -->
-    <button class="mobile-menu-btn" id="mobileMenuBtn">☰<i class="fas fa-bars"></i> Menu</button>
-    <!--<button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>-->
+    <!--button class="mobile-menu-btn" id="mobileMenuBtn">☰<i class="fas fa-bars"></i> Menu</button-->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰ Menu</button>
     
     <!-- En-tête -->
     <header>
@@ -3342,18 +3341,29 @@ const firebaseConfig = {
 
 
 // Initialisation Firebase
-let db;
+
 try {
-    firebase.initializeApp(firebaseConfig);
+    const firebaseApp = firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
     console.log("Firebase initialisé avec succès");
+    
+    // Activez la persistance des données
+    db.enablePersistence()
+      .catch((err) => {
+          console.log("Erreur de persistance Firestore:", err);
+      });
+      
+    // Chargez les avis après initialisation
+    loadTestimonials();
 } catch (error) {
     console.error("Erreur d'initialisation Firebase:", error);
-    document.getElementById('testimonials-error').style.display = 'block';
-    document.getElementById('testimonials-error').textContent = 
-        "Impossible de charger les avis. Veuillez rafraîchir la page.";
+    const errorDiv = document.getElementById('testimonials-error');
+    errorDiv.style.display = 'block';
+    errorDiv.innerHTML = `
+        <p>Impossible de charger les avis. Veuillez rafraîchir la page.</p>
+        <p>Détails: ${error.message}</p>
+    `;
 }
-
 // =============================================
 // GESTION DES AVIS CLIENTS
 // =============================================
@@ -3443,78 +3453,68 @@ function loadTestimonials() {
 }
 
 async function submitTestimonial() {
+    // Récupération des données du formulaire
     const name = document.getElementById('testimonial-name').value.trim();
     const rating = document.querySelector('input[name="rating"]:checked')?.value;
     const service = document.getElementById('testimonial-service').value;
     const message = document.getElementById('testimonial-message').value.trim();
+    const website = document.querySelector('input[name="website"]').value; // Champ anti-spam
     
-    if (!name || !rating || !message) {
+    // Validation
+    if (website || !name || !rating || !message) {
         alert('Veuillez remplir tous les champs obligatoires');
         return;
     }
     
-    // Vérifier l'enregistrement client
-    let clientId = localStorage.getItem('kbims_client_id');
-    if (!clientId) {
-        clientId = 'client-' + Date.now();
-        localStorage.setItem('kbims_client_id', clientId);
-    }
-    
-    const clientData = JSON.parse(localStorage.getItem('kbims_client')) || {};
-    
     try {
-        await db.collection("avis").add({
+        // Afficher un indicateur de chargement
+        const submitBtn = document.querySelector('#testimonial-form button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+        submitBtn.disabled = true;
+        
+        // Préparer les données
+        const clientId = localStorage.getItem('kbims_client_id') || 'guest-' + Date.now();
+        const clientData = JSON.parse(localStorage.getItem('kbims_client')) || {};
+        
+        const testimonialData = {
             name,
             rating: Number(rating),
             service,
-            message: `"${message}"`,
+            message,
             clientId,
             avatar: clientData.avatar || '',
-            role: clientData.role || 'Client',
-            date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
+            date: new Date().toLocaleDateString('fr-FR', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            }),
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            status: 'pending', // Pour modération
             editableUntil: Date.now() + 48 * 60 * 60 * 1000 // 48h pour modifier
-        });
+        };
         
-        alert('Merci pour votre avis ! Il est maintenant visible.');
+        // Envoyer à Firestore
+        const docRef = await db.collection("avis").add(testimonialData);
+        
+        // Afficher la confirmation
+        alert('Merci pour votre avis ! Il sera publié après modération.');
         closeModal('testimonial-modal');
-        loadTestimonials();
+        
+        // Recharger les avis
+        await loadTestimonials();
+        
     } catch (error) {
         console.error("Erreur d'envoi:", error);
-        alert("Une erreur est survenue: " + error.message);
+        alert(`Une erreur est survenue: ${error.message}`);
+    } finally {
+        // Réactiver le bouton
+        if (submitBtn) {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
     }
 }
-
-function deleteTestimonial(id) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet avis ?')) return;
-    
-    db.collection("avis").doc(id).delete()
-        .then(() => {
-            alert('Avis supprimé avec succès');
-            loadTestimonials();
-        })
-        .catch(error => {
-            console.error("Erreur de suppression:", error);
-            alert("Impossible de supprimer l'avis: " + error.message);
-        });
-}
-
-// Au chargement de la page
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof db !== 'undefined') {
-        loadTestimonials();
-    }
-    
-    // Gestion du formulaire
-    const testimonialForm = document.getElementById('testimonial-form');
-    if (testimonialForm) {
-        testimonialForm.onsubmit = function(e) {
-            e.preventDefault();
-            submitTestimonial();
-        };
-    }
-});
 </script>
-
 </body>
 </html>
