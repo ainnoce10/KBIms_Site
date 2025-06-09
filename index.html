@@ -7,7 +7,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KBI Multi-services - Solutions Intégrées</title>
-   <link rel="icon" type="image/png" href="favicon.png">
+   <link rel="icon" type="image/png" href="assets/images/favicon.png">
   <style>
     
   /* [Tous vos styles CSS existants restent inchangés] */
@@ -17,7 +17,7 @@
       --accent-color: #D97706;
       --text-color: #333;
       --bg-color: #1E3A8A;     
-      --light-bg: #f1f1f1;
+      --light-bg:rgb(56, 44, 44);
     }
 
     /*--------------------MMMMMM-------------------------*/
@@ -2540,7 +2540,7 @@ function loadTestimonials() {
     return unsubscribe;
 }
 
-    async function submitTestimonial() {
+  /*  async function submitTestimonial() {
       // Récupération des données du formulaire
       const name = document.getElementById('testimonial-name').value.trim();
       const rating = document.querySelector('input[name="rating"]:checked')?.value;
@@ -2600,7 +2600,124 @@ function loadTestimonials() {
           submitBtn.innerHTML = originalText;
           submitBtn.disabled = false;
       }
-    }
+    }*/
+async function submitTestimonial() {
+  const name = document.getElementById('testimonial-name').value.trim();
+  const rating = document.querySelector('input[name="rating"]:checked')?.value;
+  const service = document.getElementById('testimonial-service').value;
+  const message = document.getElementById('testimonial-message').value.trim();
+  
+  if (!name || !rating || !message) {
+    alert('Veuillez remplir tous les champs obligatoires');
+    return;
+  }
+
+  const submitBtn = document.querySelector('#testimonial-form button');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publication...';
+
+  try {
+    // Récupérer les infos client
+    const client = JSON.parse(localStorage.getItem('kbims_client')) || {};
+    const avatarUrl = await uploadAvatar(client.avatarFile);
+
+    // Enregistrement dans Firestore
+    await db.collection("avis").add({
+      name,
+      rating: Number(rating),
+      service,
+      message,
+      clientId: localStorage.getItem('kbims_client_id'),
+      avatar: avatarUrl || client.avatar || '',
+      date: new Date().toLocaleDateString('fr-FR'),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      status: "approved", // Publication directe
+      editableUntil: Date.now() + 48 * 60 * 60 * 1000 // 48h pour modification
+    });
+
+    alert('Votre avis a été publié avec succès !');
+    closeModal('testimonial-modal');
+    loadTestimonials();
+    
+  } catch (error) {
+    console.error("Erreur:", error);
+    alert("Une erreur est survenue: " + error.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Soumettre';
+  }
+}
+//==========================================
+
+// Initialisation du storage Firebase
+const storage = firebase.storage();
+
+async function uploadAvatar(file) {
+  if (!file) return null;
+  
+  try {
+    // Créer un nom de fichier unique
+    const filename = `avatars/${Date.now()}_${file.name}`;
+    const storageRef = storage.ref(filename);
+    
+    // Upload du fichier
+    await storageRef.put(file);
+    
+    // Récupérer l'URL publique
+    return await storageRef.getDownloadURL();
+  } catch (error) {
+    console.error("Erreur upload avatar:", error);
+    return null;
+  }
+}
+
+// Modification du formulaire d'enregistrement
+document.getElementById('register-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const name = document.getElementById('client-name').value.trim();
+  const whatsapp = document.getElementById('prefix-client').value + 
+                   document.getElementById('client-whatsapp').value;
+  const email = document.getElementById('client-email').value;
+  const avatarFile = document.getElementById('client-avatar').files[0];
+
+  if (!name || !whatsapp) {
+    alert('Le nom et le WhatsApp sont obligatoires');
+    return;
+  }
+
+  const submitBtn = this.querySelector('button');
+  submitBtn.disabled = true;
+
+  try {
+    // Upload de l'avatar
+    const avatarUrl = await uploadAvatar(avatarFile);
+    
+    // Création ID client
+    const clientId = 'client-' + Date.now();
+    
+    // Stockage local
+    const clientData = {
+      id: clientId,
+      name,
+      whatsapp,
+      email,
+      avatar: avatarUrl || '',
+      avatarFile: avatarFile || null,
+      registeredAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem('kbims_client', JSON.stringify(clientData));
+    localStorage.setItem('kbims_client_id', clientId);
+    
+    closeModal('register-modal');
+    showTestimonialForm();
+    
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+
 
     // =============================================
     // GESTION CLIENT (ENREGISTREMENT)
