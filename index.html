@@ -9,6 +9,8 @@
   <title>KBI Multi-services - Solutions Intégrées</title>
    <link rel="icon" type="image/png" href="favicon.png">
   <style>
+    
+  /* [Tous vos styles CSS existants restent inchangés] */
     :root {
       --primary-color: #1E3A8A;
       --secondary-color: #FFFF00;
@@ -18,7 +20,7 @@
       --light-bg: #f1f1f1;
     }
 
-    /*---------------------------------------------*/
+    /*--------------------MMMMMM-------------------------*/
     /* Styles généraux */
     body {
       font-family: 'Arial', sans-serif;
@@ -1662,13 +1664,71 @@
     display: inline-block;
     margin-left: 10px;
 }
+
+
+.firebase-error-content {
+    background: #FFF4F4;
+    border: 1px solid #FFD6D6;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 15px 0;
+    color: #721C24;
+}
+
+.firebase-error-content i {
+    color: #F44336;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.solution-box {
+    background: #E7F5FF;
+    border: 1px solid #B3E0FF;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.solution-box h4 {
+    margin-top: 0;
+    color: #0056B3;
+}
+
+.refresh-btn {
+    background: #1E3A8A;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.no-testimonials {
+    text-align: center;
+    color: #666;
+    padding: 30px;
+}
+
+.no-testimonials i {
+    font-size: 50px;
+    color: #D1D5DB;
+    margin-bottom: 15px;
+}
+
+
   </style>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://apis.google.com/js/api.js"></script>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
+  <!-- [Tout votre contenu HTML existant reste inchangé] -->
   <!-- Contenu défilable -->
   <div class="scrollable-content">
     <!-- Point d'ancrage pour le bouton Accueil -->
@@ -2140,9 +2200,8 @@
           <a href="https://facebook.com/kbims" target="_blank" class="facebook"><i class="fab fa-facebook"></i></a>
         </div>
       </section>
-  
-      <!-- Section Avis Clients -->
-<section id="avis" class="service-card">
+  <!-- Section Avis Clients -->
+  <section id="avis" class="service-card">
     <h2 class="service-title"><i class="fas fa-comments service-icon"></i>Avis Clients</h2>
     
     <div id="testimonials-loading" class="firebase-loading">
@@ -2158,8 +2217,7 @@
 
     <!-- Modal d'enregistrement client -->
     <div id="register-modal" class="modal">
-        <!-- [Votre contenu existant reste inchangé] -->
-                   <div class="modal-content">
+        <div class="modal-content">
             <span class="close-modal" onclick="closeModal('register-modal')">&times;</span>
             <h3><i class="fas fa-user-plus"></i> Enregistrement Client</h3>
             <form id="register-form">
@@ -2196,11 +2254,10 @@
 
     <!-- Modal de témoignage -->
     <div id="testimonial-modal" class="modal">
-        <!-- [Votre contenu existant reste inchangé] -->
-              <div class="modal-content">
+        <div class="modal-content">
             <span class="close-modal" onclick="closeModal('testimonial-modal')">&times;</span>
             <form id="testimonial-form" class="contact-form">
-              <input type="text" name="website" style="display:none;">
+              <input type="text" name="website" style="display:none; position: absolute; left: -9999px;" aria-hidden="true" tabindex="-1">
               
               <div class="form-group">
                 <label for="testimonial-name">Nom :</label>
@@ -2236,7 +2293,7 @@
                 <textarea id="testimonial-message" rows="4" name="message" required></textarea>
               </div>
               
-              <button type="button" class="button" onclick="testimonialSystem.submitTestimonial()">Soumettre</button>
+              <button type="button" class="button" onclick="submitTestimonial()">Soumettre</button>
             </form>
           </div>
     </div>
@@ -2246,8 +2303,10 @@
             <i class="fas fa-edit"></i> Laisser votre témoignage
         </button>
     </div>
-</section>
-    </main>
+  </section>
+
+  <!-- [Le reste de votre contenu HTML reste inchangé] -->
+ </main>
   
     <!-- Footer -->
     <footer>
@@ -2300,6 +2359,387 @@
   
   <!-- Script JavaScript -->
   <script>
+    // =============================================
+    // CONFIGURATION FIREBASE
+    // =============================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDxNu38F_TeFa-wTlxDCxBWRE-WFvP8W3s",
+      authDomain: "kbims2024-avis.firebaseapp.com",
+      projectId: "kbims2024-avis",
+      storageBucket: "kbims2024-avis.firebasestorage.app",
+      messagingSenderId: "838525761122",
+      appId: "1:838525761122:web:e8957e0946c27bcfa5833b"
+    };
+
+    let db;
+
+    // Initialisation Firebase
+    try {
+      // Vérifie si Firebase est déjà initialisé
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      db = firebase.firestore();
+      console.log("Firebase initialisé avec succès");
+      
+      // Activez la persistance des données
+      db.enablePersistence()
+        .catch((err) => {
+            console.log("Erreur de persistance Firestore:", err);
+        });
+        
+      // Chargez les avis après initialisation
+      loadTestimonials();
+    } catch (error) {
+      console.error("Erreur d'initialisation Firebase:", error);
+      const errorDiv = document.getElementById('testimonials-error');
+      errorDiv.style.display = 'block';
+      errorDiv.innerHTML = `
+          <p>Impossible de charger les avis. Veuillez rafraîchir la page.</p>
+          <p>Détails: ${error.message}</p>
+      `;
+    }
+
+    // =============================================
+    // GESTION DES AVIS CLIENTS (CORRIGÉ)
+    // =============================================
+    function getServiceName(serviceCode) {
+      const services = {
+        'electricite': 'Électricité',
+        'batiment': 'Bâtiment',
+        'informatique': 'Informatique'
+      };
+      return services[serviceCode] || serviceCode;
+    }
+
+    function renderTestimonial(doc) {
+      const data = doc.data();
+      const currentClientId = localStorage.getItem('kbims_client_id');
+      const canEdit = currentClientId === data.clientId && 
+                     Date.now() < data.editableUntil;
+      
+      const stars = '★'.repeat(Math.floor(data.rating)) + 
+                   (data.rating % 1 >= 0.5 ? '½' : '');
+
+      const testimonialHTML = `
+          <div class="testimonial-card" data-id="${doc.id}" data-service="${data.service}">
+              <div class="testimonial-header">
+                  <img src="${data.avatar || 'https://randomuser.me/api/portraits/men/' + Math.floor(Math.random() * 100) + '.jpg'}" 
+                      alt="${data.name}" class="client-avatar">
+                  <div class="client-info">
+                      <h3>${data.name} ${canEdit ? '<span class="editable-badge">Modifiable</span>' : ''}</h3>
+                      <p>${data.role || 'Client'}</p>
+                      <div class="rating-stars">
+                          ${stars} <span class="rating-text">${data.rating}/5</span>
+                      </div>
+                  </div>
+              </div>
+              <blockquote class="testimonial-content">
+                  ${data.message}
+              </blockquote>
+              <div class="testimonial-footer">
+                  <span class="service-tag ${data.service}">
+                      ${getServiceName(data.service)}
+                  </span>
+                  <span class="testimonial-date">${data.date}</span>
+              </div>
+              ${canEdit ? `
+                  <div class="testimonial-actions">
+                      <button class="edit-testimonial" onclick="editTestimonial('${doc.id}')">
+                          <i class="fas fa-edit"></i> Modifier
+                      </button>
+                      <button class="delete-testimonial" onclick="deleteTestimonial('${doc.id}')">
+                          <i class="fas fa-trash"></i> Supprimer
+                      </button>
+                  </div>
+              ` : ''}
+              ${localStorage.getItem('kbims_admin') === 'true' ? `
+                  <div class="admin-actions">
+                      <button class="admin-delete-btn" onclick="adminDeleteTestimonial('${doc.id}')">
+                          <i class="fas fa-trash"></i> Supprimer (Admin)
+                      </button>
+                  </div>
+              ` : ''}
+          </div>
+      `;
+      
+      return testimonialHTML;
+    }
+
+function loadTestimonials() {
+    const container = document.getElementById('testimonials-container');
+    const loadingElement = document.getElementById('testimonials-loading');
+    
+    // Réinitialisation de l'affichage
+    container.innerHTML = '';
+    loadingElement.style.display = 'flex';
+    
+    // Configuration de la requête avec index composite
+    const query = db.collection("avis")
+        .where("status", "==", "approved")
+        .orderBy("timestamp", "desc")
+        .limit(50); // Limite raisonnable pour les performances
+
+    // Gestion en temps réel avec gestion d'erreur améliorée
+    const unsubscribe = query.onSnapshot(
+        (querySnapshot) => {
+            loadingElement.style.display = 'none';
+            
+            if (querySnapshot.empty) {
+                container.innerHTML = `
+                    <div class="no-testimonials">
+                        <i class="fas fa-comment-slash"></i>
+                        <p>Aucun avis approuvé pour le moment.</p>
+                        <p>Soyez le premier à donner votre avis !</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                container.innerHTML += renderTestimonial(doc);
+            });
+        },
+        (error) => {
+            console.error("Erreur Firestore:", error);
+            loadingElement.style.display = 'none';
+            
+            // Message d'erreur complet avec solution
+            const errorDiv = document.getElementById('testimonials-error');
+            errorDiv.style.display = 'block';
+            errorDiv.innerHTML = `
+                <div class="firebase-error-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Erreur de chargement des avis</h3>
+                    <p>${error.message}</p>
+                    
+                    ${error.code === 'failed-precondition' ? `
+                        <div class="solution-box">
+                            <h4>Solution requise :</h4>
+                            <ol>
+                                <li>Ouvrez la <a href="https://console.firebase.google.com/project/kbims2024-avis/firestore/indexes" target="_blank">console Firebase</a></li>
+                                <li>Créez un index composite pour la collection "avis" avec :
+                                    <ul>
+                                        <li>Champ 1: status (Ascendant)</li>
+                                        <li>Champ 2: timestamp (Descendant)</li>
+                                    </ul>
+                                </li>
+                                <li>Attendez 2-5 minutes que l'index soit actif</li>
+                            </ol>
+                            <button onclick="window.location.reload()" class="refresh-btn">
+                                <i class="fas fa-sync-alt"></i> Rafraîchir après création
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+    );
+
+    return unsubscribe;
+}
+
+    async function submitTestimonial() {
+      // Récupération des données du formulaire
+      const name = document.getElementById('testimonial-name').value.trim();
+      const rating = document.querySelector('input[name="rating"]:checked')?.value;
+      const service = document.getElementById('testimonial-service').value;
+      const message = document.getElementById('testimonial-message').value.trim();
+      const website = document.querySelector('input[name="website"]').value; // Champ anti-spam
+      
+      // Validation
+      if (website || !name || !rating || !message) {
+          alert('Veuillez remplir tous les champs obligatoires');
+          return;
+      }
+      
+      const submitBtn = document.querySelector('#testimonial-form button');
+      const originalText = submitBtn.innerHTML;
+      
+      try {
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+          submitBtn.disabled = true;
+          
+          // Récupérer les infos du client
+          const client = JSON.parse(localStorage.getItem('kbims_client')) || {};
+          const clientId = localStorage.getItem('kbims_client_id') || 'guest-' + Date.now();
+          
+          // Préparer les données
+          const testimonialData = {
+              name: name || client.name,
+              rating: Number(rating),
+              service,
+              message,
+              clientId,
+              avatar: client.avatar || '',
+              date: new Date().toLocaleDateString('fr-FR', { 
+                  day: 'numeric', 
+                  month: 'long', 
+                  year: 'numeric' 
+              }),
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+              status: 'pending', // Pour modération
+              editableUntil: Date.now() + 48 * 60 * 60 * 1000 // 48h pour modifier
+          };
+          
+          // Envoyer à Firestore
+          await db.collection("avis").add(testimonialData);
+          
+          // Afficher la confirmation
+          alert('Merci pour votre avis ! Il sera publié après modération.');
+          closeModal('testimonial-modal');
+          
+          // Recharger les avis
+          await loadTestimonials();
+          
+      } catch (error) {
+          console.error("Erreur d'envoi:", error);
+          alert(`Une erreur est survenue: ${error.message}`);
+      } finally {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+      }
+    }
+
+    // =============================================
+    // GESTION CLIENT (ENREGISTREMENT)
+    // =============================================
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('client-name').value.trim();
+      const whatsapp = document.getElementById('prefix-client').value + 
+                      document.getElementById('client-whatsapp').value;
+      const email = document.getElementById('client-email').value;
+      const avatarFile = document.getElementById('client-avatar').files[0];
+      
+      if (!name || !whatsapp) {
+          alert('Le nom et le WhatsApp sont obligatoires');
+          return;
+      }
+      
+      // Générer un ID client s'il n'existe pas
+      let clientId = localStorage.getItem('kbims_client_id');
+      if (!clientId) {
+          clientId = 'client-' + Date.now();
+          localStorage.setItem('kbims_client_id', clientId);
+      }
+      
+      // Stocker les infos du client
+      const clientData = {
+          id: clientId,
+          name,
+          whatsapp,
+          email,
+          avatar: avatarFile ? URL.createObjectURL(avatarFile) : 'https://randomuser.me/api/portraits/men/' + Math.floor(Math.random() * 100) + '.jpg',
+          registeredAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem('kbims_client', JSON.stringify(clientData));
+      closeModal('register-modal');
+      
+      // Ouvrir directement le formulaire d'avis
+      showTestimonialForm();
+    });
+
+    // Prévisualisation de l'avatar
+    document.getElementById('client-avatar').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const preview = document.getElementById('avatar-preview');
+          preview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Fonction pour afficher le formulaire de témoignage
+    function showTestimonialForm() {
+      // Vérifier si le client est enregistré
+      const client = JSON.parse(localStorage.getItem('kbims_client'));
+      
+      if (!client) {
+        showRegisterModal();
+      } else {
+        const modal = document.getElementById('testimonial-modal');
+        document.getElementById('testimonial-name').value = client.name;
+        modal.style.display = 'block';
+      }
+    }
+
+    // Fonction pour afficher le modal d'enregistrement
+    function showRegisterModal() {
+      document.getElementById('register-modal').style.display = 'block';
+    }
+
+    // Fonction pour fermer un modal
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+//----------------------------------------------
+
+// Dans votre fonction d'initialisation
+function initFirebase() {
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.firestore();
+        
+        // Vérification des capacités de requête
+        testFirestoreQuery();
+        
+    } catch (error) {
+        console.error("Erreur d'initialisation Firebase:", error);
+        showFatalError(error);
+    }
+}
+
+function testFirestoreQuery() {
+    const testQuery = db.collection("avis")
+        .where("status", "==", "approved")
+        .orderBy("timestamp", "desc")
+        .limit(1);
+        
+    testQuery.get().then(() => {
+        console.log("Configuration Firestore validée");
+        loadTestimonials();
+    }).catch(error => {
+        console.error("Échec de la requête test:", error);
+        showConfigError(error);
+    });
+}
+
+function showConfigError(error) {
+    const container = document.getElementById('testimonials-container');
+    container.innerHTML = `
+        <div class="config-error">
+            <h3>Configuration requise</h3>
+            <p>Une action administrative est nécessaire :</p>
+            <div class="error-details">${error.message}</div>
+            <a href="https://console.firebase.google.com/project/kbims2024-avis/firestore/indexes" 
+               target="_blank" class="config-link">
+                Configurer les indexes Firestore
+            </a>
+        </div>
+    `;
+}
+
+
+
+
+
+    // [Le reste de votre code JavaScript existant reste inchangé]
+  
+  
+  
+  
+  
+    
     // =============================================
     // SYSTEME D'UPLOAD HYBRIDE
     // =============================================
@@ -3321,201 +3761,7 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
         card.setAttribute('data-date', isoDate);
       });
     });
+    
   </script>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-
-<script>
-// =============================================
-// CONFIGURATION FIREBASE
-// =============================================
-const firebaseConfig = {
-  apiKey: "AIzaSyDxNu38F_TeFa-wTlxDCxBWRE-WFvP8W3s",
-  authDomain: "kbims2024-avis.firebaseapp.com",
-  projectId: "kbims2024-avis",
-  storageBucket: "kbims2024-avis.firebasestorage.app",
-  messagingSenderId: "838525761122",
-  appId: "1:838525761122:web:e8957e0946c27bcfa5833b"
-};
-
-
-// Initialisation Firebase
-
-try {
-    const firebaseApp = firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    console.log("Firebase initialisé avec succès");
-    
-    // Activez la persistance des données
-    db.enablePersistence()
-      .catch((err) => {
-          console.log("Erreur de persistance Firestore:", err);
-      });
-      
-    // Chargez les avis après initialisation
-    loadTestimonials();
-} catch (error) {
-    console.error("Erreur d'initialisation Firebase:", error);
-    const errorDiv = document.getElementById('testimonials-error');
-    errorDiv.style.display = 'block';
-    errorDiv.innerHTML = `
-        <p>Impossible de charger les avis. Veuillez rafraîchir la page.</p>
-        <p>Détails: ${error.message}</p>
-    `;
-}
-// =============================================
-// GESTION DES AVIS CLIENTS
-// =============================================
-function renderTestimonial(doc) {
-    const data = doc.data();
-    const currentClientId = localStorage.getItem('kbims_client_id');
-    const canEdit = currentClientId === data.clientId && 
-                   Date.now() < data.editableUntil;
-    
-    const stars = '★'.repeat(Math.floor(data.rating)) + 
-                 (data.rating % 1 >= 0.5 ? '½' : '');
-
-    const testimonialHTML = `
-        <div class="testimonial-card" data-id="${doc.id}" data-service="${data.service}">
-            <div class="testimonial-header">
-                <img src="${data.avatar || 'https://randomuser.me/api/portraits/men/' + Math.floor(Math.random() * 100) + '.jpg'}" 
-                     alt="${data.name}" class="client-avatar">
-                <div class="client-info">
-                    <h3>${data.name} ${canEdit ? '<span class="editable-badge">Modifiable</span>' : ''}</h3>
-                    <p>${data.role || 'Client'}</p>
-                    <div class="rating-stars">
-                        ${stars} <span class="rating-text">${data.rating}/5</span>
-                    </div>
-                </div>
-            </div>
-            <blockquote class="testimonial-content">
-                ${data.message}
-            </blockquote>
-            <div class="testimonial-footer">
-                <span class="service-tag ${data.service}">
-                    ${getServiceName(data.service)}
-                </span>
-                <span class="testimonial-date">${data.date}</span>
-            </div>
-            ${canEdit ? `
-                <div class="testimonial-actions">
-                    <button class="edit-testimonial" onclick="editTestimonial('${doc.id}')">
-                        <i class="fas fa-edit"></i> Modifier
-                    </button>
-                    <button class="delete-testimonial" onclick="deleteTestimonial('${doc.id}')">
-                        <i class="fas fa-trash"></i> Supprimer
-                    </button>
-                </div>
-            ` : ''}
-            ${localStorage.getItem('kbims_admin') === 'true' ? `
-                <div class="admin-actions">
-                    <button class="admin-delete-btn" onclick="adminDeleteTestimonial('${doc.id}')">
-                        <i class="fas fa-trash"></i> Supprimer (Admin)
-                    </button>
-                </div>
-            ` : ''}
-        </div>
-    `;
-    
-    return testimonialHTML;
-}
-
-function loadTestimonials() {
-    const container = document.getElementById('testimonials-container');
-    const loadingElement = document.getElementById('testimonials-loading');
-    
-    container.innerHTML = '';
-    loadingElement.style.display = 'flex';
-    
-    db.collection("avis")
-        .orderBy("timestamp", "desc")
-        .get()
-        .then((querySnapshot) => {
-            loadingElement.style.display = 'none';
-            
-            if (querySnapshot.empty) {
-                container.innerHTML = '<p>Aucun avis pour le moment. Soyez le premier à donner votre avis !</p>';
-                return;
-            }
-            
-            querySnapshot.forEach((doc) => {
-                container.innerHTML += renderTestimonial(doc);
-            });
-        })
-        .catch((error) => {
-            console.error("Erreur de chargement:", error);
-            loadingElement.style.display = 'none';
-            document.getElementById('testimonials-error').style.display = 'block';
-            document.getElementById('testimonials-error').textContent = 
-                "Erreur de chargement des avis. Veuillez réessayer plus tard.";
-        });
-}
-
-async function submitTestimonial() {
-    // Récupération des données du formulaire
-    const name = document.getElementById('testimonial-name').value.trim();
-    const rating = document.querySelector('input[name="rating"]:checked')?.value;
-    const service = document.getElementById('testimonial-service').value;
-    const message = document.getElementById('testimonial-message').value.trim();
-    const website = document.querySelector('input[name="website"]').value; // Champ anti-spam
-    
-    // Validation
-    if (website || !name || !rating || !message) {
-        alert('Veuillez remplir tous les champs obligatoires');
-        return;
-    }
-    
-    try {
-        // Afficher un indicateur de chargement
-        const submitBtn = document.querySelector('#testimonial-form button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
-        submitBtn.disabled = true;
-        
-        // Préparer les données
-        const clientId = localStorage.getItem('kbims_client_id') || 'guest-' + Date.now();
-        const clientData = JSON.parse(localStorage.getItem('kbims_client')) || {};
-        
-        const testimonialData = {
-            name,
-            rating: Number(rating),
-            service,
-            message,
-            clientId,
-            avatar: clientData.avatar || '',
-            date: new Date().toLocaleDateString('fr-FR', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric' 
-            }),
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            status: 'pending', // Pour modération
-            editableUntil: Date.now() + 48 * 60 * 60 * 1000 // 48h pour modifier
-        };
-        
-        // Envoyer à Firestore
-        const docRef = await db.collection("avis").add(testimonialData);
-        
-        // Afficher la confirmation
-        alert('Merci pour votre avis ! Il sera publié après modération.');
-        closeModal('testimonial-modal');
-        
-        // Recharger les avis
-        await loadTestimonials();
-        
-    } catch (error) {
-        console.error("Erreur d'envoi:", error);
-        alert(`Une erreur est survenue: ${error.message}`);
-    } finally {
-        // Réactiver le bouton
-        if (submitBtn) {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }
-    }
-}
-</script>
 </body>
 </html>
